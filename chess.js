@@ -58,6 +58,12 @@ const boardSquares = [
     ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
 ];
 
+class GameBoard {
+    constructor(turn) {
+        this.turn = turn;
+    }
+}
+
 let initialBoard = boardSquares.map(
     (row) => {
         return row.map(
@@ -81,10 +87,38 @@ function getCoordinate(square) {
             }
         }
     }
+    return [-1, -1];
 }
 
 function getSquare(coordinate) {
     return boardSquares[coordinate[0]][coordinate[1]];
+}
+
+function updateBoard(oldBoardArray, pieceMoved, destinationSquare) {
+    let newBoardArray = oldBoardArray.map(
+        (row) => {
+            return row.map(
+                (square, rowIndex, row) => {
+                    for (let i = 0; i < row.length; i++) {
+                        if (square === pieceMoved) {
+                            return 'x';
+                        }
+
+                        // TODO
+                        else if (square === destinationSquare) {
+                            return pieceMoved;
+                        }
+                        
+                        else {
+                            return square;
+                        }
+                    }
+                }
+            )
+        }
+    )
+
+    return newBoardArray;
 }
 
 
