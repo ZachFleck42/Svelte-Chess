@@ -58,12 +58,6 @@ const boardSquares = [
     ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
 ];
 
-class GameBoard {
-    constructor(turn) {
-        this.turn = turn;
-    }
-}
-
 let initialBoard = boardSquares.map(
     (row) => {
         return row.map(
@@ -78,6 +72,8 @@ let initialBoard = boardSquares.map(
         )
     }
 )
+
+let gameHistory = [initialBoard];
 
 function getCoordinate(square) {
     for (let i = 0; i < boardSquares.length; i++) {
@@ -94,8 +90,8 @@ function getSquare(coordinate) {
     return boardSquares[coordinate[0]][coordinate[1]];
 }
 
-function getNewBoard(oldBoardArray, pieceMoved, destinationSquare) {
-    let newBoardArray = oldBoardArray.map(
+function getNewBoardStandard(oldBoard, pieceMoved, destinationSquare) {
+    let newBoard = oldBoard.map(
         (row, indexOfRowInBoard) => {
             return row.map(
                 (square, indexOfSquareInRow) => {
@@ -114,9 +110,17 @@ function getNewBoard(oldBoardArray, pieceMoved, destinationSquare) {
             )
         }
     )
-    return newBoardArray;
+    gameHistory.push(newBoard)
+    return newBoard;
 }
 
+function getNewBoardCastling() {
+
+}
+
+function getNewBoardEnPassant() {
+
+}
 
 // Main game loop; runs until checkmate
 
@@ -131,6 +135,3 @@ function getNewBoard(oldBoardArray, pieceMoved, destinationSquare) {
         // If check, note for next move
         // If checkmate, end game
 
-let testBoard = getNewBoard(initialBoard, 'WPA', 'a3');
-let testBoard2 = getNewBoard(testBoard, 'WPC', 'c4');
-console.log(testBoard2);
