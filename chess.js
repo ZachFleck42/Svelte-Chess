@@ -45,18 +45,7 @@ const WPD = createNewGamePiece('WPD', 'White\'s D Pawn', 'White', 'P', 'd2');
 const WPE = createNewGamePiece('WPE', 'White\'s E Pawn', 'White', 'P', 'e2');
 const WPF = createNewGamePiece('WPF', 'White\'s F Pawn', 'White', 'P', 'f2');
 const WPG = createNewGamePiece('WPG', 'White\'s G Pawn', 'White', 'P', 'g2');
-const WPH = createNewGamePiece('WPH', 'White\'s H Pawn', 'White', 'P', 'h2');              
-
-const emptyBoard = [
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x']
-];
+const WPH = createNewGamePiece('WPH', 'White\'s H Pawn', 'White', 'P', 'h2');           
 
 const boardSquares = [
     ['a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'],
@@ -68,20 +57,6 @@ const boardSquares = [
     ['a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2'],
     ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
 ];
-
-function getCoordinate(square) {
-    for (let i = 0; i < boardSquares.length; i++) {
-        for (let j = 0; j < boardSquares[i].length; j++) {
-            if (boardSquares[i][j] === square) {
-                return [i, j];
-            }
-        }
-    }
-}
-
-function getSquare(coordinate) {
-    return boardSquares[coordinate[0]][coordinate[1]];
-}
 
 let initialBoard = boardSquares.map(
     (row) => {
@@ -98,5 +73,30 @@ let initialBoard = boardSquares.map(
     }
 )
 
+function getCoordinate(square) {
+    for (let i = 0; i < boardSquares.length; i++) {
+        for (let j = 0; j < boardSquares[i].length; j++) {
+            if (boardSquares[i][j] === square) {
+                return [i, j];
+            }
+        }
+    }
+}
 
-console.log(initialBoard);
+function getSquare(coordinate) {
+    return boardSquares[coordinate[0]][coordinate[1]];
+}
+
+
+// Main game loop; runs until checkmate
+
+    // Player picks a piece to move
+        // Check if piece has valid moves?
+    
+    // Player picks a square to move selected piece to
+    
+    // Check if move is valid
+
+    // If valid move, check for check(mate)
+        // If check, note for next move
+        // If checkmate, end game
