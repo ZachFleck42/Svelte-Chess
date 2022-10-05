@@ -83,7 +83,7 @@ function getCoordinate(square) {
     for (let i = 0; i < boardSquares.length; i++) {
         for (let j = 0; j < boardSquares[i].length; j++) {
             if (boardSquares[i][j] === square) {
-                return `${i}, ${j}`;
+                return `${i},${j}`;
             }
         }
     }
@@ -96,14 +96,14 @@ function getSquare(coordinate) {
 
 function getNewBoard(oldBoardArray, pieceMoved, destinationSquare) {
     let newBoardArray = oldBoardArray.map(
-        (row, indexOfRowInBoard, boardArray) => {
+        (row, indexOfRowInBoard) => {
             return row.map(
                 (square, indexOfSquareInRow) => {
                     for (let i = 0; i < row.length; i++) {
                         if (square === pieceMoved) {
                             return 'x';
                         }
-                        else if (getCoordinate(destinationSquare) === `${indexOfRowInBoard}, ${indexOfSquareInRow}`) {
+                        else if (getCoordinate(destinationSquare) === `${indexOfRowInBoard},${indexOfSquareInRow}`) {
                             return pieceMoved;
                         }
                         else {
@@ -114,7 +114,6 @@ function getNewBoard(oldBoardArray, pieceMoved, destinationSquare) {
             )
         }
     )
-
     return newBoardArray;
 }
 
@@ -133,4 +132,5 @@ function getNewBoard(oldBoardArray, pieceMoved, destinationSquare) {
         // If checkmate, end game
 
 let testBoard = getNewBoard(initialBoard, 'WPA', 'a3');
-console.log(testBoard);
+let testBoard2 = getNewBoard(testBoard, 'WPC', 'c4');
+console.log(testBoard2);
