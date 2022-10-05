@@ -14,12 +14,12 @@ function createNewGamePiece(abbreviation, name, color, notation, startPos) {
 }
 
 const BKR = createNewGamePiece('BKR', 'Black\'s Kingside Rook', 'Black', 'R', 'a8');
-const BKK = createNewGamePiece('BKK', 'Black\'s Kingside Knight', 'Black', 'N', 'b8');
+const BKK = createNewGamePiece('BKN', 'Black\'s Kingside Knight', 'Black', 'N', 'b8');
 const BKB = createNewGamePiece('BKB', 'Black\'s Kingside Bishop', 'Black', 'B', 'c8');
-const BQz = createNewGamePiece('BQz', 'Black\'s Queen', 'Black', 'Q', 'd8');
-const BKz = createNewGamePiece('BKz', 'Black\'s King', 'Black', 'K', 'e8');
+const BQz = createNewGamePiece('BQQ', 'Black\'s Queen', 'Black', 'Q', 'd8');
+const BKz = createNewGamePiece('BKK', 'Black\'s King', 'Black', 'K', 'e8');
 const BQB = createNewGamePiece('BQB', 'Black\'s Queenside Bishop', 'Black', 'B', 'f8');
-const BQK = createNewGamePiece('BQK', 'Black\'s Queenside Knight', 'Black', 'N', 'g8');
+const BQK = createNewGamePiece('BQN', 'Black\'s Queenside Knight', 'Black', 'N', 'g8');
 const BQR = createNewGamePiece('BQR', 'Black\'s Queenside Rook', 'Black', 'R', 'h8');
 const BPA = createNewGamePiece('BPA', 'Black\'s A Pawn', 'Black', 'P', 'a7');
 const BPB = createNewGamePiece('BPB', 'Black\'s B Pawn', 'Black', 'P', 'b7');
@@ -31,12 +31,12 @@ const BPG = createNewGamePiece('BPG', 'Black\'s G Pawn', 'Black', 'P', 'g7');
 const BPH = createNewGamePiece('BPH', 'Black\'s H Pawn', 'Black', 'P', 'h7');
 
 const WKR = createNewGamePiece('WKR', 'White\'s Kingside Rook', 'White', 'R', 'a1');
-const WKK = createNewGamePiece('WKK', 'White\'s Kingside Knight', 'White', 'N', 'b1');
+const WKK = createNewGamePiece('WKN', 'White\'s Kingside Knight', 'White', 'N', 'b1');
 const WKB = createNewGamePiece('WKB', 'White\'s Kingside Bishop', 'White', 'B', 'c1');
-const WQz = createNewGamePiece('WQz', 'White\'s Queen', 'White', 'Q', 'd1');
-const WKz = createNewGamePiece('WKz', 'White\'s King', 'White', 'K', 'e1');
+const WQz = createNewGamePiece('WQQ', 'White\'s Queen', 'White', 'Q', 'd1');
+const WKz = createNewGamePiece('WKK', 'White\'s King', 'White', 'K', 'e1');
 const WQB = createNewGamePiece('WQB', 'White\'s Queenside Bishop', 'White', 'B', 'f1');
-const WQK = createNewGamePiece('WQK', 'White\'s Queenside Knight', 'White', 'N', 'g1');
+const WQK = createNewGamePiece('WQN', 'White\'s Queenside Knight', 'White', 'N', 'g1');
 const WQR = createNewGamePiece('WQR', 'White\'s Queenside Rook', 'White', 'R', 'h1');
 const WPA = createNewGamePiece('WPA', 'White\'s A Pawn', 'White', 'P', 'a2');
 const WPB = createNewGamePiece('WPB', 'White\'s B Pawn', 'White', 'P', 'b2');
@@ -75,7 +75,7 @@ let initialBoard = boardSquares.map(
 
 let gameHistory = [initialBoard];
 
-function getCoordinate(square) {
+function getArrayPos(square) {
     for (let i = 0; i < boardSquares.length; i++) {
         for (let j = 0; j < boardSquares[i].length; j++) {
             if (boardSquares[i][j] === square) {
@@ -86,8 +86,44 @@ function getCoordinate(square) {
     return [-1, -1];
 }
 
-function getSquare(coordinate) {
-    return boardSquares[coordinate[0]][coordinate[1]];
+function getSquare(arrayPos) {
+    return boardSquares[arrayPos[0]][arrayPos[2]];
+}
+
+function getPieceArrayPos(gameBoard, gamePiece) {
+    for (let i = 0; i < gameBoard.length; i++) {
+        for (let j = 0; j < gameBoard[i].length; j++) {
+            if (gameBoard[i][j] === gamePiece) {
+                return `${i},${j}`;
+            }
+        }
+    }
+}
+
+function checkMoveValidity(gameBoard, pieceMoved, destinationSquare) {
+    if (!('abcdefgh'.includes(destinationSquare[0])) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
+        return -1
+    }
+
+
+    if (pieceMoved[1] = 'P') {
+
+    }
+    else if (pieceMoved[1] = 'B') {
+
+    }
+    else if (pieceMoved[1] = 'R') {
+
+    }
+    else if (pieceMoved[1] = 'N') {
+
+    }
+    else if (pieceMoved[1] = 'Q') {
+
+    }
+    else if (pieceMoved[1] = 'K') {
+
+    }
 }
 
 function getNewBoardStandard(oldBoard, pieceMoved, destinationSquare) {
@@ -99,7 +135,7 @@ function getNewBoardStandard(oldBoard, pieceMoved, destinationSquare) {
                         if (square === pieceMoved) {
                             return 'x';
                         }
-                        else if (getCoordinate(destinationSquare) === `${indexOfRowInBoard},${indexOfSquareInRow}`) {
+                        else if (getArrayPos(destinationSquare) === `${indexOfRowInBoard},${indexOfSquareInRow}`) {
                             return pieceMoved;
                         }
                         else {
@@ -135,3 +171,4 @@ function getNewBoardEnPassant() {
         // If check, note for next move
         // If checkmate, end game
 
+console.log(getSquare(getPieceArrayPos(initialBoard, 'BPB')));
