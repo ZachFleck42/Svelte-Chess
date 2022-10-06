@@ -11,13 +11,13 @@ const boardSquares = [
 
 const initialBoard = [
     ['BQR', 'BQN', 'BQB', 'BQQ', 'BKK', 'BKB', 'BKN', 'BKR'],
-    ['BPA', 'BPB', 'BPC', 'BPD', 'BPE', 'BPF', 'BPG', 'BPH'],
+    ['BAP', 'BBP', 'BCP', 'BDP', 'BEP', 'BFP', 'BGP', 'BHP'],
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
-    ['WPA', 'WPB', 'WPC', 'WPD', 'WPE', 'WPF', 'WPG', 'WPH']
-    ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR'],
+    ['WAP', 'WBP', 'WCP', 'WDP', 'WEP', 'WFP', 'WGP', 'WHP'],
+    ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 ];
 
 function getSquare(arrayPos) {
@@ -61,7 +61,7 @@ function checkMoveValidity(gameBoard, pieceMoved, destinationSquare) {
     }
 
     // Pawn logic
-    if (pieceMoved[1] === 'P') {
+    if (pieceMoved[2] === 'P') {
         // White pawn logic
         if (pieceMoved[0] === 'W') {
             // Verify pawn is only moving forward one or two spaces
@@ -141,19 +141,34 @@ function checkMoveValidity(gameBoard, pieceMoved, destinationSquare) {
         }
     }
     // Bishop logic
-    else if (pieceMoved[1] === 'B') {
+    else if (pieceMoved[2] === 'B') {
 
     }
-    else if (pieceMoved[1] === 'R') {
+    else if (pieceMoved[2] === 'R') {
 
     }
-    else if (pieceMoved[1] === 'N') {
+    else if (pieceMoved[2] === 'N') {
+        if (pieceMoved[0] === destinationSquareContent[0]) {
+            return 'You can\'t capture your own piece';
+        }
+
+        if ((squarePos[2] - piecePos[2] === 2) || (piecePos[2] - squarePos[2] === 2)) {
+            if (squarePos[0] - piecePos[0] === 1 || piecePos[0] - squarePos[0] === 1) {
+                return 0;
+            }
+        }
+
+        if ((squarePos[2] - piecePos[2] === 1) || (piecePos[2] - squarePos[2] === 1)) {
+            if (squarePos[0] - piecePos[0] === 2 || piecePos[0] - squarePos[0] === 2) {
+                return 0;
+            }
+        }
+        return 'That\'s not how knights move';
+    }
+    else if (pieceMoved[2] === 'Q') {
 
     }
-    else if (pieceMoved[1] === 'Q') {
-
-    }
-    else if (pieceMoved[1] === 'K') {
+    else if (pieceMoved[2] === 'K') {
 
     }
 }
@@ -204,3 +219,8 @@ let gameHistory = [initialBoard];
     // If valid move, check for check(mate)
         // If check, note for next move
         // If checkmate, end game
+
+
+let testBoard1 = getNewBoardStandard(initialBoard, 'WQN', 'd5');
+console.log(testBoard1);
+console.log(checkMoveValidity(testBoard1, 'WQN', 'f4'))
