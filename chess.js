@@ -1,52 +1,3 @@
-let gamePieces = []
-
-function createNewGamePiece(abbreviation, name, color, notation, startPos) {
-    piece = {
-        abbreviation: abbreviation,
-        name: name,
-        color: color,
-        notation: notation,
-        startPos: startPos,
-    }
-
-    gamePieces.push(piece);
-    return piece;
-}
-
-const BKR = createNewGamePiece('BKR', 'Black\'s Kingside Rook', 'Black', 'R', 'a8');
-const BKN = createNewGamePiece('BKN', 'Black\'s Kingside Knight', 'Black', 'N', 'b8');
-const BKB = createNewGamePiece('BKB', 'Black\'s Kingside Bishop', 'Black', 'B', 'c8');
-const BQQ = createNewGamePiece('BQQ', 'Black\'s Queen', 'Black', 'Q', 'd8');
-const BKK = createNewGamePiece('BKK', 'Black\'s King', 'Black', 'K', 'e8');
-const BQB = createNewGamePiece('BQB', 'Black\'s Queenside Bishop', 'Black', 'B', 'f8');
-const BQN = createNewGamePiece('BQN', 'Black\'s Queenside Knight', 'Black', 'N', 'g8');
-const BQR = createNewGamePiece('BQR', 'Black\'s Queenside Rook', 'Black', 'R', 'h8');
-const BPA = createNewGamePiece('BPA', 'Black\'s A Pawn', 'Black', 'P', 'a7');
-const BPB = createNewGamePiece('BPB', 'Black\'s B Pawn', 'Black', 'P', 'b7');
-const BPC = createNewGamePiece('BPC', 'Black\'s C Pawn', 'Black', 'P', 'c7');
-const BPD = createNewGamePiece('BPD', 'Black\'s D Pawn', 'Black', 'P', 'd7');
-const BPE = createNewGamePiece('BPE', 'Black\'s E Pawn', 'Black', 'P', 'e7');
-const BPF = createNewGamePiece('BPF', 'Black\'s F Pawn', 'Black', 'P', 'f7');
-const BPG = createNewGamePiece('BPG', 'Black\'s G Pawn', 'Black', 'P', 'g7');
-const BPH = createNewGamePiece('BPH', 'Black\'s H Pawn', 'Black', 'P', 'h7');
-
-const WKR = createNewGamePiece('WKR', 'White\'s Kingside Rook', 'White', 'R', 'a1');
-const WKN = createNewGamePiece('WKN', 'White\'s Kingside Knight', 'White', 'N', 'b1');
-const WKB = createNewGamePiece('WKB', 'White\'s Kingside Bishop', 'White', 'B', 'c1');
-const WQQ = createNewGamePiece('WQQ', 'White\'s Queen', 'White', 'Q', 'd1');
-const WKK = createNewGamePiece('WKK', 'White\'s King', 'White', 'K', 'e1');
-const WQB = createNewGamePiece('WQB', 'White\'s Queenside Bishop', 'White', 'B', 'f1');
-const WQN = createNewGamePiece('WQN', 'White\'s Queenside Knight', 'White', 'N', 'g1');
-const WQR = createNewGamePiece('WQR', 'White\'s Queenside Rook', 'White', 'R', 'h1');
-const WPA = createNewGamePiece('WPA', 'White\'s A Pawn', 'White', 'P', 'a2');
-const WPB = createNewGamePiece('WPB', 'White\'s B Pawn', 'White', 'P', 'b2');
-const WPC = createNewGamePiece('WPC', 'White\'s C Pawn', 'White', 'P', 'c2');
-const WPD = createNewGamePiece('WPD', 'White\'s D Pawn', 'White', 'P', 'd2');
-const WPE = createNewGamePiece('WPE', 'White\'s E Pawn', 'White', 'P', 'e2');
-const WPF = createNewGamePiece('WPF', 'White\'s F Pawn', 'White', 'P', 'f2');
-const WPG = createNewGamePiece('WPG', 'White\'s G Pawn', 'White', 'P', 'g2');
-const WPH = createNewGamePiece('WPH', 'White\'s H Pawn', 'White', 'P', 'h2');           
-
 const boardSquares = [
     ['a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'],
     ['a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7'],
@@ -58,20 +9,16 @@ const boardSquares = [
     ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
 ];
 
-let initialBoard = boardSquares.map(
-    (row) => {
-        return row.map(
-            (square) => {
-                for (let i = 0; i < gamePieces.length; i++) {
-                    if (gamePieces[i].startPos === square) {
-                        return gamePieces[i].abbreviation
-                    }
-                }
-                return 'x';
-            }
-        )
-    }
-)
+const initialBoard = [
+    ['BQR', 'BQN', 'BQB', 'BQQ', 'BKK', 'BKB', 'BKN', 'BKR'],
+    ['BPA', 'BPB', 'BPC', 'BPD', 'BPE', 'BPF', 'BPG', 'BPH'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['WPA', 'WPB', 'WPC', 'WPD', 'WPE', 'WPF', 'WPG', 'WPH']
+    ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR'],
+];
 
 function getSquare(arrayPos) {
     return boardSquares[arrayPos[0]][arrayPos[2]];
@@ -257,9 +204,3 @@ let gameHistory = [initialBoard];
     // If valid move, check for check(mate)
         // If check, note for next move
         // If checkmate, end game
-
-let testBoard1 = getNewBoardStandard(initialBoard, 'WPB', 'b3');
-let testBoard2 = getNewBoardStandard(testBoard1, 'BPC', 'c4');
-
-console.log(testBoard2);
-console.log(checkMoveValidity(testBoard2, 'WPD', 'd5'));
