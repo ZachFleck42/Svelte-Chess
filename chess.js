@@ -101,33 +101,96 @@ function getPieceArrayPos(gameBoard, gamePiece) {
 function checkMoveValidity(gameBoard, pieceMoved, destinationSquare) {
     // Verify destinationSquare is on the board
     if (!('abcdefgh'.includes(destinationSquare[0])) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
-        return 1;
+        return 'That\'s not even on the board.';
     }
 
     let piecePos = getPieceArrayPos(gameBoard, pieceMoved)
     let squarePos = getSquareArrayPos(destinationSquare)
+    let destinationSquareContent = gameBoard[squarePos[0]][squarePos[2]]
 
     // Verify piece is not moving to square it's already on
     if (piecePos === squarePos) {
-        return 2;
+        return 'That\'s the same spot.';
     }
 
     // Pawn logic
     if (pieceMoved[1] === 'P') {
+        // White pawn logic
         if (pieceMoved[0] === 'W') {
-            if (squarePos[0] - piecePos[0] !== 1) {
-                console.log(`piecePos:  ${piecePos}`);
-                console.log(`squarePos: ${squarePos}`);
-                console.log((piecePos[0] - squarePos[0]));
-                // Allow pawn to move two spaces forward if it's in starting position
-                // and no other pieces are in its path
-                if ((piecePos[0] - squarePos[0] === 2) && (piecePos[0] === '6') && (squarePos[2] === piecePos[2]) && (gameBoard[squarePos[0]][squarePos[2]] === 'x') && (gameBoard[piecePos[0] - 1][piecePos[2]] === 'x')) {
-                    return 'YES';
+            // Verify pawn is only moving forward one or two spaces
+            if (piecePos[0] - squarePos[0] !== 1) {
+                // Allow pawn to move two spaces forward if it's in its starting position and no other pieces are in its path
+                if ((piecePos[0] - squarePos[0] === 2) && (piecePos[0] === '6') && (squarePos[2] === piecePos[2])) {
+                    if ((destinationSquareContent === 'x') && (gameBoard[Number(piecePos[0]) - 1][piecePos[2]] === 'x')) {
+                        return 0;
+                    }
+                    return 'There\'s a piece in your way.';
                 }
+                return 'Pawns can only move one space forward (or two, but only from its starting position).';
             }
+
+            // Verify pawn is not moving left/right unless capturing an enemy piece
+            if (piecePos[2] !== squarePos[2]) {
+                if (piecePos[2] - squarePos[2] > 1 || piecePos[2] - squarePos[2] < -1) {
+                    return 'Pawns can\'t move that far sideways.';
+                }
+
+                // Verify the capturing move is valid
+                if (destinationSquareContent[0] === 'B') {
+                    return 0;
+                }
+                else if (destinationSquareContent[0] === 'W') {
+                    return 'You can\'t capture your own pieces.';
+                }
+                else if (destinationSquareContent[0] === 'x') {
+                    if (gameBoard[Number(squarePos[0]) + 1][squarePos[2]].slice(0, 2) === 'BP') {
+                        return 'HOLYHELL'
+                    }
+                    return 'There\'s no piece to capture there.';
+                }
+                return 'How did we get here? PAWNS!'
+            }
+
+            // Passed all filters; it's a valid move
+            return 0;
         }
         else if (pieceMoved[0] === 'B') {
+            // Verify pawn is only moving forward one or two spaces
+            if (squarePos[0] - piecePos[0] !== 1) {
+                // Allow pawn to move two spaces forward if it's in its starting position and no other pieces are in its path
+                if ((squarePos[0] - piecePos[0] === 2) && (piecePos[0] === '1') && (squarePos[2] === piecePos[2])) {
+                    if ((destinationSquareContent === 'x') && (gameBoard[Number(piecePos[0]) + 1][piecePos[2]] === 'x')) {
+                        return 0;
+                    }
+                    return 'There\'s a piece in your way.';
+                }
+                return 'Pawns can only move one space forward (or two, but only from its starting position).';
+            }
 
+            // Verify pawn is not moving left/right unless capturing an enemy piece
+            if (piecePos[2] !== squarePos[2]) {
+                if (squarePos[2] - piecePos[2] > 1 || squarePos[2] - piecePos[2] < -1) {
+                    return 'Pawns can\'t move that far sideways.';
+                }
+
+                // Verify the capturing move is valid
+                if (destinationSquareContent[0] === 'W') {
+                    return 0;
+                }
+                else if (destinationSquareContent[0] === 'B') {
+                    return 'You can\'t capture your own pieces.';
+                }
+                else if (destinationSquareContent[0] === 'x') {
+                    if (gameBoard[Number(squarePos[0]) - 1][squarePos[2]].slice(0, 2) === 'BP') {
+                        return 'HOLYHELL'
+                    }
+                    return 'There\'s no piece to capture there.';
+                }
+                return 'How did we get here? PAWNS!'
+            }
+
+            // Passed all filters; it's a valid move
+            return 0;
         }
     }
     // Bishop logic
@@ -195,6 +258,8 @@ let gameHistory = [initialBoard];
         // If check, note for next move
         // If checkmate, end game
 
-console.log(`arrayPos WPA: ${getPieceArrayPos(initialBoard, 'WPA')}`)
-console.log(`arrayPos destinationSquare: ${getSquareArrayPos('a4')}`)
-console.log(checkMoveValidity(initialBoard, 'WPA', 'a4'));
+let testBoard1 = getNewBoardStandard(initialBoard, 'WPB', 'b3');
+let testBoard2 = getNewBoardStandard(testBoard1, 'BPC', 'c4');
+
+console.log(testBoard2);
+console.log(checkMoveValidity(testBoard2, 'WPD', 'd5'));
