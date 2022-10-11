@@ -126,25 +126,33 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
             }
         }
 
-        // White capturing move
+        // White capturing moves
         if (pieceMoved[0] === 'W' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 1 && pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
             if (destinationSquareContent[1] === 'B') {
                 return 0;
             }
             else {
+                if (boardHistory.at(-2)[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
+                    return 'HOLYHELL';
+                }
                 return 'There\'s no piece to capture there';
             }
         }
 
-        // Black capturing move
+        // Black capturing moves
         if (pieceMoved[0] === 'B' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1 && pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
             if (destinationSquareContent[1] === 'W') {
                 return 0;
             }
             else {
+                if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('W' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('W' + destinationSquare[0].toUpperCase() + 'P')) {
+                    return 'HOLYHELL';
+                }
                 return 'There\'s no piece to capture there';
             }
         }
+
+        return 'Invalid pawn movement';
     }
     // Bishop logic
     else if (pieceMoved[2] === 'B') {
