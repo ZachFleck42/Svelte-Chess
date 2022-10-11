@@ -111,41 +111,41 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                     return 'You can only move a pawn two spaces forward from its starting position.';
                 }
             }
-            // Black pawns
-            else if (pieceMoved[0] === 'B') {
-                if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1) {
-                    if (pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-                        if (destinationSquareContent === 'x') {
-                            return 0;
-                        }
-                        else {
-                            return 'There\'s a piece in your way.';
-                        }
-                    }
-                    else if ([-1, 1].includes(pieceMovedArrayPos[2] - destinationSquareArrayPos[2])) {
-                        if (destinationSquareContent[0] === 'W') {
-                            return 0;
-                        }
-                        else if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
-                            return 'HOLYHELL';
-                        }
-                        else {
-                            return 'There\'s no piece to capture there.';
-                        }
-                    }
-                }
-                else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-                    if (pieceMovedArrayPos[0] === '1') {
-                        if (destinationSquareContent === 'x' && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === 'x') {
-                            return 0;
-                        }
-                        else {
-                            return 'There\'s a piece in your way.';
-                        }
+        }
+        // Black pawns
+        else if (pieceMoved[0] === 'B') {
+            if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1) {
+                if (pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
+                    if (destinationSquareContent === 'x') {
+                        return 0;
                     }
                     else {
-                        return 'You can only move a pawn two spaces forward from its starting position.';
+                        return 'There\'s a piece in your way.';
                     }
+                }
+                else if ([-1, 1].includes(pieceMovedArrayPos[2] - destinationSquareArrayPos[2])) {
+                    if (destinationSquareContent[0] === 'W') {
+                        return 0;
+                    }
+                    else if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
+                        return 'HOLYHELL';
+                    }
+                    else {
+                        return 'There\'s no piece to capture there.';
+                    }
+                }
+            }
+            else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
+                if (pieceMovedArrayPos[0] === '1') {
+                    if (destinationSquareContent === 'x' && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === 'x') {
+                        return 0;
+                    }
+                    else {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+                else {
+                    return 'You can only move a pawn two spaces forward from its starting position.';
                 }
             }
         }
