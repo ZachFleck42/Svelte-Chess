@@ -22,6 +22,7 @@ const initialBoard = [
 
 let gameHistory = [initialBoard];
 
+
 function getSquare(arrayPos) {
     return boardSquares[arrayPos[0]][arrayPos[2]];
 }
@@ -86,7 +87,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                         return 'There\'s a piece in your way.';
                     }
                 }
-                else if ([-1, 1].includes(pieceMovedArrayPos[2] - destinationSquareArrayPos[2])) {
+                else if (Math.abs(pieceMovedArrayPos[2] - destinationSquareArrayPos[2]) === 1) {
                     if (destinationSquareContent[0] === 'B') {
                         return 0;
                     }
@@ -123,7 +124,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                         return 'There\'s a piece in your way.';
                     }
                 }
-                else if ([-1, 1].includes(pieceMovedArrayPos[2] - destinationSquareArrayPos[2])) {
+                else if (Math.abs(pieceMovedArrayPos[2] - destinationSquareArrayPos[2]) === 1) {
                     if (destinationSquareContent[0] === 'W') {
                         return 0;
                     }
@@ -154,23 +155,21 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
     // Bishop logic
     else if (pieceMoved[2] === 'B') {
 
+
     }
     else if (pieceMoved[2] === 'R') {
 
     }
     else if (pieceMoved[2] === 'N') {
-        if ((destinationSquareArrayPos[2] - pieceMovedArrayPos[2] === 2) || (pieceMovedArrayPos[2] - destinationSquareArrayPos[2] === 2)) {
-            if (destinationSquareArrayPos[0] - pieceMovedArrayPos[0] === 1 || pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 1) {
-                return 0;
-            }
+        if (Math.abs(destinationSquareArrayPos[2] - pieceMovedArrayPos[2]) === 1 && Math.abs(destinationSquareArrayPos[0] - pieceMovedArrayPos[0]) === 2) {
+            return 0;
         }
-
-        if ((destinationSquareArrayPos[2] - pieceMovedArrayPos[2] === 1) || (pieceMovedArrayPos[2] - destinationSquareArrayPos[2] === 1)) {
-            if (destinationSquareArrayPos[0] - pieceMovedArrayPos[0] === 2 || pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 2) {
-                return 0;
-            }
+        else if (Math.abs(destinationSquareArrayPos[2] - pieceMovedArrayPos[2]) === 2 && Math.abs(destinationSquareArrayPos[0] - pieceMovedArrayPos[0]) === 1) {
+            return 0;
         }
-        return 'That\'s not how knights move';
+        else {
+            return 'Invalid knight movement.';
+        }
     }
     else if (pieceMoved[2] === 'Q') {
 
@@ -230,6 +229,6 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WAP', 'a5');
-let testBoard2 = updateBoardStandard(gameHistory.at(-1), 'BBP', 'b5');
-console.log(checkIfPieceMovedProperly(gameHistory, 'WAP', 'b6'))
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKN', 'd4');
+console.log(gameHistory.at(-1));
+console.log(checkIfPieceMovedProperly(gameHistory, 'WKN', 'c2'))
