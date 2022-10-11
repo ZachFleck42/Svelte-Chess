@@ -70,89 +70,86 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
     // Verify piece is not attempting to capture a piece of its own color
     if (pieceMoved[0] === destinationSquareContent[0]) {
         if (pieceMoved[1] !== 'K' && destinationSquareContent[1] !== 'R') {
-            return 'You can\'t capture your own piece';
+            return 'Space is already occupied by one of your pieces.';
         }
     }
 
     // Pawn logic
     if (pieceMoved[2] === 'P') {
-        // Normal white move
-        if (pieceMoved[0] === 'W' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 1 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-            if (destinationSquareContent === 'x') {
-                return 0;
-            }
-            else {
-                return 'There\'s a piece in your way';
-            }
-        }
-
-        // Normal black move
-        if (pieceMoved[0] === 'B' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-            if (destinationSquareContent === 'x') {
-                return 0;
-            }
-            else {
-                return 'There\'s a piece in your way';
-            }
-        }
-
-        // Two-space white move
-        if (pieceMoved[0] === 'W' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2] && destinationSquareContent === 'x') {
-            if (pieceMovedArrayPos[0] === '6') {
-                if (currentBoard[Number(destinationSquareArrayPos[0]) - 1][destinationSquareArrayPos[2]] === 'x') {
-                    return 0;
+        // White pawns
+        if (pieceMoved[0] === 'W') {
+            if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 1) {
+                if (pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
+                    if (destinationSquareContent === 'x') {
+                        return 0;
+                    }
+                    else {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+                else if (pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
+                    if (destinationSquareContent[1] === 'B') {
+                        return 0;
+                    }
+                    else if (boardHistory.at(-2)[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
+                        return 'HOLYHELL';
+                    }
                 }
                 else {
-                    return 'There\'s a piece in your way';
+                    return 'There\'s no piece to capture there.';
                 }
             }
-            else {
-                return 'You can only move a pawn forward two spaces from its starting position';
-            }
-        }
-
-        // Two-space black move
-        if (pieceMoved[0] === 'B' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2] && destinationSquareContent === 'x') {
-            if (pieceMovedArrayPos[0] === '1') {
-                if (currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === 'x') {
-                    return 0;
+            else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
+                if (pieceMovedArrayPos[0] === '6') {
+                    if (destinationSquareContent === 'x' && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === 'x') {
+                        return 0;
+                    }
+                    else {
+                        return 'There\'s a piece in your way.';
+                    }
                 }
                 else {
-                    return 'There\'s a piece in your way';
+                    return 'You can only move a pawn two spaces forward from its starting position.';
                 }
             }
-            else {
-                return 'You can only move a pawn forward two spaces from its starting position';
-            }
-        }
-
-        // White capturing moves
-        if (pieceMoved[0] === 'W' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 1 && pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
-            if (destinationSquareContent[1] === 'B') {
-                return 0;
-            }
-            else {
-                if (boardHistory.at(-2)[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
-                    return 'HOLYHELL';
+            // Black pawns
+            else if (pieceMoved[0] === 'B') {
+                if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1) {
+                    if (pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
+                        if (destinationSquareContent === 'x') {
+                            return 0;
+                        }
+                        else {
+                            return 'There\'s a piece in your way.';
+                        }
+                    }
+                    else if (pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
+                        if (destinationSquareContent[1] === 'W') {
+                            return 0;
+                        }
+                        else if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
+                            return 'HOLYHELL';
+                        }
+                    }
+                    else {
+                        return 'There\'s no piece to capture there.';
+                    }
                 }
-                return 'There\'s no piece to capture there';
-            }
-        }
-
-        // Black capturing moves
-        if (pieceMoved[0] === 'B' && pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1 && pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
-            if (destinationSquareContent[1] === 'W') {
-                return 0;
-            }
-            else {
-                if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('W' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('W' + destinationSquare[0].toUpperCase() + 'P')) {
-                    return 'HOLYHELL';
+                else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
+                    if (pieceMovedArrayPos[0] === '1') {
+                        if (destinationSquareContent === 'x' && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === 'x') {
+                            return 0;
+                        }
+                        else {
+                            return 'There\'s a piece in your way.';
+                        }
+                    }
+                    else {
+                        return 'You can only move a pawn two spaces forward from its starting position.';
+                    }
                 }
-                return 'There\'s no piece to capture there';
             }
         }
-
-        return 'Invalid pawn movement';
     }
     // Bishop logic
     else if (pieceMoved[2] === 'B') {
