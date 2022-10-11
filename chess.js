@@ -20,8 +20,7 @@ const initialBoard = [
     ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 ];
 
-let boardHistory = [initialBoard];
-
+let gameHistory = [initialBoard];
 
 function getSquare(arrayPos) {
     return boardSquares[arrayPos[0]][arrayPos[2]];
@@ -52,10 +51,10 @@ function getPieceArrayPos(gameBoard, gamePiece) {
 
 
 function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) {
-    let currentBoard = boardHistory.slice(-1)
-    let pieceMovedArrayPos = getPieceArrayPos(currentBoard, pieceMoved)
-    let destinationSquareArrayPos = getSquareArrayPos(destinationSquare)
-    let destinationSquareContent = currentBoard[destinationSquareArrayPos[0]][destinationSquareArrayPos[2]]
+    let currentBoard = boardHistory.at(-1);
+    let pieceMovedArrayPos = getPieceArrayPos(currentBoard, pieceMoved);
+    let destinationSquareArrayPos = getSquareArrayPos(destinationSquare);
+    let destinationSquareContent = currentBoard[destinationSquareArrayPos[0]][destinationSquareArrayPos[2]];
 
     // Verify destinationSquare is on the board
     if (!('abcdefgh'.includes(destinationSquare[0])) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
@@ -87,16 +86,16 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                         return 'There\'s a piece in your way.';
                     }
                 }
-                else if (pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
-                    if (destinationSquareContent[1] === 'B') {
+                else if ([-1, 1].includes(pieceMovedArrayPos[2] - destinationSquareArrayPos[2])) {
+                    if (destinationSquareContent[0] === 'B') {
                         return 0;
                     }
                     else if (boardHistory.at(-2)[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
                         return 'HOLYHELL';
                     }
-                }
-                else {
-                    return 'There\'s no piece to capture there.';
+                    else {
+                        return 'There\'s no piece to capture there.';
+                    }
                 }
             }
             else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
@@ -123,16 +122,16 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                             return 'There\'s a piece in your way.';
                         }
                     }
-                    else if (pieceMovedArrayPos[2] - destinationSquareArrayPos[2] in [-1, 1]) {
-                        if (destinationSquareContent[1] === 'W') {
+                    else if ([-1, 1].includes(pieceMovedArrayPos[2] - destinationSquareArrayPos[2])) {
+                        if (destinationSquareContent[0] === 'W') {
                             return 0;
                         }
                         else if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
                             return 'HOLYHELL';
                         }
-                    }
-                    else {
-                        return 'There\'s no piece to capture there.';
+                        else {
+                            return 'There\'s no piece to capture there.';
+                        }
                     }
                 }
                 else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
@@ -150,6 +149,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                 }
             }
         }
+        return 'Invalid pawn movement.';
     }
     // Bishop logic
     else if (pieceMoved[2] === 'B') {
@@ -201,7 +201,7 @@ function updateBoardStandard(oldBoard, pieceMoved, destinationSquare) {
             )
         }
     )
-    boardHistory.push(newBoard)
+    gameHistory.push(newBoard)
     return newBoard;
 }
 
@@ -230,6 +230,6 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(initialBoard, 'WQN', 'd5');
-console.log(testBoard1);
-console.log(checkIfPieceMovedProperly(testBoard1, 'WQN', 'f4'))
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WAP', 'a5');
+let testBoard2 = updateBoardStandard(gameHistory.at(-1), 'BBP', 'b5');
+console.log(checkIfPieceMovedProperly(gameHistory, 'WAP', 'b6'))
