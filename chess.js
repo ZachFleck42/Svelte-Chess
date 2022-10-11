@@ -161,16 +161,49 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         if ((Math.abs(horizontalDisplacement) === 1 && Math.abs(verticalDisplacement) === 2) || (Math.abs(horizontalDisplacement) === 2 && Math.abs(verticalDisplacement) === 1)) {
             return 0;
         }
-        else {
-            return 'Invalid knight movement.';
-        }
+        return 'Invalid knight movement.';
     }
     
     // Bishop logic
     if (pieceMoved[2] === 'B') {
-        if (Math.abs(verticalDisplacement) === Math.abs(horizontalDisplacement)) {
-
+        if (Math.abs(verticalDisplacement) !== Math.abs(horizontalDisplacement)) {
+            return 'Invalid bishop movement.';
         }
+
+        if (verticalDisplacement > 0) {
+            if (horizontalDisplacement > 0) {       // Up-left
+                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
+                    if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2] - i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else if (horizontalDisplacement < 0) {  // Up-right
+                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
+                    if (currentBoard[pieceMovedArrayPos[0] - i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+        }
+        else if (verticalDisplacement < 0) {
+            if (horizontalDisplacement > 0) {       // Down-left
+                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
+                    if (currentBoard[pieceMovedArrayPos[0] - i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else if (horizontalDisplacement < 0 ) { // Down-right
+                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
+                    if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2] - i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+        }
+
+        return 0;
     }
     
     // Rook logic
@@ -240,6 +273,6 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKN', 'd4');
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKB', 'c3');
 console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WKN', 'c2'))
+console.log(checkIfPieceMovedProperly(gameHistory, 'WKB', 'e5'))
