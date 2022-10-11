@@ -24,7 +24,7 @@ let gameHistory = [initialBoard];
 
 
 function getSquare(arrayPos) {
-    return boardSquares[arrayPos[0]][arrayPos[2]];
+    return boardSquares[Number(arrayPos[0])][Number(arrayPos[2])];
 }
 
 
@@ -171,15 +171,15 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         }
 
         if (verticalDisplacement > 0) {
-            if (horizontalDisplacement > 0) {       // Up-left
-                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
+            if (horizontalDisplacement > 0) {           // Up-left
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
                     if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2] - i] !== 'x') {
                         return 'There\'s a piece in your way.';
                     }
                 }
             }
-            else if (horizontalDisplacement < 0) {  // Up-right
-                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
+            else if (horizontalDisplacement < 0) {      // Up-right
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
                     if (currentBoard[pieceMovedArrayPos[0] - i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
                         return 'There\'s a piece in your way.';
                     }
@@ -187,22 +187,21 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
             }
         }
         else if (verticalDisplacement < 0) {
-            if (horizontalDisplacement > 0) {       // Down-left
-                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
-                    if (currentBoard[pieceMovedArrayPos[0] - i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+            if (horizontalDisplacement > 0) {           // Down-left
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                    if (currentBoard[Number(pieceMovedArrayPos[0]) + i][pieceMovedArrayPos[2] - i] !== 'x') {
                         return 'There\'s a piece in your way.';
                     }
                 }
             }
-            else if (horizontalDisplacement < 0 ) { // Down-right
-                for (let i = 0; i < Math.abs(horizontalDisplacement) - 1; i++) {
-                    if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2] - i] !== 'x') {
+            else if (horizontalDisplacement < 0 ) {     // Down-right
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                    if (currentBoard[Number(pieceMovedArrayPos[0]) + i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
                         return 'There\'s a piece in your way.';
                     }
                 }
             }
         }
-
         return 0;
     }
     
@@ -275,4 +274,4 @@ function updateBoardEnPassant() {
 
 let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKB', 'c3');
 console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WKB', 'e5'))
+console.log(checkIfPieceMovedProperly(gameHistory, 'WKB', 'a5'))
