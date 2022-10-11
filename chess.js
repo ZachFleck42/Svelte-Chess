@@ -152,29 +152,40 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         }
         return 'Invalid pawn movement.';
     }
-    // Bishop logic
-    else if (pieceMoved[2] === 'B') {
+    
+    let verticalDisplacement = pieceMovedArrayPos[0] - destinationSquareArrayPos[0];
+    let horizontalDisplacement = pieceMovedArrayPos[2] - destinationSquareArrayPos[2];
 
-
-    }
-    else if (pieceMoved[2] === 'R') {
-
-    }
-    else if (pieceMoved[2] === 'N') {
-        if (Math.abs(destinationSquareArrayPos[2] - pieceMovedArrayPos[2]) === 1 && Math.abs(destinationSquareArrayPos[0] - pieceMovedArrayPos[0]) === 2) {
-            return 0;
-        }
-        else if (Math.abs(destinationSquareArrayPos[2] - pieceMovedArrayPos[2]) === 2 && Math.abs(destinationSquareArrayPos[0] - pieceMovedArrayPos[0]) === 1) {
+    // Knight logic
+    if (pieceMoved[2] === 'N') {
+        if ((Math.abs(horizontalDisplacement) === 1 && Math.abs(verticalDisplacement) === 2) || (Math.abs(horizontalDisplacement) === 2 && Math.abs(verticalDisplacement) === 1)) {
             return 0;
         }
         else {
             return 'Invalid knight movement.';
         }
     }
-    else if (pieceMoved[2] === 'Q') {
+    
+    // Bishop logic
+    if (pieceMoved[2] === 'B') {
+        if (Math.abs(verticalDisplacement) === Math.abs(horizontalDisplacement)) {
+
+        }
+    }
+    
+    // Rook logic
+    if (pieceMoved[2] === 'R') {
 
     }
-    else if (pieceMoved[2] === 'K') {
+    
+
+    // Queen logic
+    if (pieceMoved[2] === 'Q') {
+
+    }
+
+    // King logic
+    if (pieceMoved[2] === 'K') {
 
     }
 }
