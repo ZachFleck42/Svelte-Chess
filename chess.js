@@ -207,7 +207,20 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
     
     // Rook logic
     if (pieceMoved[2] === 'R') {
+        if (Math.abs(verticalDisplacement) > 0) {
+            if (horizontalDisplacement !== 0) {
+                return 'Invalid rook movement.';
+            }
 
+            for (let i = 0; i < Math.abs(verticalDisplacement); i++) {
+
+            }
+        }
+        else if (Math.abs(horizontalDisplacement) > 0) {
+            if (verticalDisplacement !== 0) {
+                return 'Invalid rook movement.';
+            }
+        }
     }
     
 
@@ -218,7 +231,10 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
 
     // King logic
     if (pieceMoved[2] === 'K') {
-
+        if (Math.abs(horizontalDisplacement) <= 1 || Math.abs(verticalDisplacement) <=1) {
+            return 0;
+        }
+        return 'Invalid king movement.';
     }
 }
 
