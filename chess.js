@@ -69,7 +69,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
 
     // Verify piece is not attempting to capture a piece of its own color
     if (pieceMoved[0] === destinationSquareContent[0]) {
-        if (pieceMoved[2] !== 'K' && destinationSquareContent[1] !== '2') {
+        if (!(pieceMoved[2] === 'K' && destinationSquareContent[2] === 'R')) {
             return 'Space is already occupied by one of your pieces.';
         }
     }
@@ -318,8 +318,6 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
             }
             else if (horizontalDisplacement < 0) {          // Straight right
                 for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                    console.log("hi")
-                    console.log(currentBoard[pieceMovedArrayPos[0]][Number(pieceMovedArrayPos[2]) + i])
                     if (currentBoard[pieceMovedArrayPos[0]][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
                         return 'There\'s a piece in your way.';
                     }
@@ -331,28 +329,54 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
 
     // King logic
     if (pieceMoved[2] === 'K') {
-        if (Math.abs(horizontalDisplacement) <= 1 || Math.abs(verticalDisplacement) <=1) {
+        if (Math.abs(horizontalDisplacement) <= 1 && Math.abs(verticalDisplacement) <=1) {
             return 0;
         }
         else if (pieceMoved[0] === 'W' && getSquare(pieceMovedArrayPos) === 'e1') {
-            if (destinationSquare === 'g1' || destinationSquare === 'h1') {
-                
+            if (destinationSquare === 'a1' || destinationSquare === 'c1') {
+                if (currentBoard[7][0] === 'WQR' && currentBoard[7][1] === 'x' && currentBoard[7][2] === 'x' && currentBoard[7][3] === 'x') {
+                    for (let i = 0; i < boardHistory.length; i++) {
+                        if (boardHistory[i][7][0] !== 'WQR' || boardHistory[i][7][4] !== 'WKK') {
+                            return 'Invalid castle attempt.';
+                        }
+                    }
+                    return 'CASTLE';
+                }
             }
-            else if (destinationSquare === 'a1' || 'c1') {
-
+            else if (destinationSquare === 'g1' || 'h1') {
+                if (currentBoard[7][7] === 'WKR' && currentBoard[7][6] === 'x' && currentBoard[7][5] === 'x') {
+                    for (let i = 0; i < boardHistory.length; i++) {
+                        if (boardHistory[i][7][7] !== 'WKR' || boardHistory[i][7][4] !== 'WKK') {
+                            return 'Invalid castle attempt.';
+                        }
+                    }
+                    return 'CASTLE';
+                }
             }
         }
         else if (pieceMoved[0] === 'B' && getSquare(pieceMovedArrayPos) === 'e8') {
-            if (destinationSquare === 'g8' || destinationSquare === 'h8') {
-
+            if (destinationSquare === 'a8' || destinationSquare === 'c8') {
+                if (currentBoard[0][0] === 'BQR' && currentBoard[0][1] === 'x' && currentBoard[0][2] === 'x' && currentBoard[0][3] === 'x') {
+                    for (let i = 0; i < boardHistory.length; i++) {
+                        if (boardHistory[i][0][0] !== 'BQR' || boardHistory[i][0][4] !== 'BKK') {
+                            return 'Invalid castle attempt.';
+                        }
+                    }
+                    return 'CASTLE';
+                }
             }
-            else if (destinationSquare === 'a8' || destinationSquare === 'c8') {
-
+            else if (destinationSquare === 'g8' || destinationSquare === 'h8') {
+                if (currentBoard[0][7] === 'BKR' && currentBoard[0][6] === 'x' && currentBoard[0][5] === 'x') {
+                    for (let i = 0; i < boardHistory.length; i++) {
+                        if (boardHistory[i][0][7] !== 'BKR' || boardHistory[i][0][4] !== 'BKK') {
+                            return 'Invalid castle attempt.';
+                        }
+                    }
+                    return 'CASTLE';
+                }
             }
         }
-        else {
-            return 'Invalid king movement.';
-        }
+        return 'Invalid king movement.';
     }
 }
 
@@ -406,6 +430,9 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'c3');
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQN', 'a3');
+let testBoard2 = updateBoardStandard(gameHistory.at(-1), 'WDP', 'd5');
+let testBoard3 = updateBoardStandard(gameHistory.at(-1), 'WQB', 'e5');
+let testBoard4 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'd2');
 console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WQQ', 'a8'))
+console.log(checkIfPieceMovedProperly(gameHistory, 'WKK', 'c1'))
