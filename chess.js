@@ -334,7 +334,25 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         if (Math.abs(horizontalDisplacement) <= 1 || Math.abs(verticalDisplacement) <=1) {
             return 0;
         }
-        return 'Invalid king movement.';
+        else if (pieceMoved[0] === 'W' && getSquare(pieceMovedArrayPos) === 'e1') {
+            if (destinationSquare === 'g1' || destinationSquare === 'h1') {
+                
+            }
+            else if (destinationSquare === 'a1' || 'c1') {
+
+            }
+        }
+        else if (pieceMoved[0] === 'B' && getSquare(pieceMovedArrayPos) === 'e8') {
+            if (destinationSquare === 'g8' || destinationSquare === 'h8') {
+
+            }
+            else if (destinationSquare === 'a8' || destinationSquare === 'c8') {
+
+            }
+        }
+        else {
+            return 'Invalid king movement.';
+        }
     }
 }
 
