@@ -250,7 +250,6 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         return 0;
     }
     
-
     // Queen logic
     if (pieceMoved[2] === 'Q') {
         if (verticalDisplacement > 0) {
@@ -391,4 +390,4 @@ function updateBoardEnPassant() {
 
 let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'c3');
 console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WQQ', 'c8'))
+console.log(checkIfPieceMovedProperly(gameHistory, 'WQQ', 'a8'))
