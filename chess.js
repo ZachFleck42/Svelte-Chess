@@ -69,7 +69,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
 
     // Verify piece is not attempting to capture a piece of its own color
     if (pieceMoved[0] === destinationSquareContent[0]) {
-        if (pieceMoved[1] !== 'K' && destinationSquareContent[1] !== 'R') {
+        if (pieceMoved[2] !== 'K' && destinationSquareContent[1] !== '2') {
             return 'Space is already occupied by one of your pieces.';
         }
     }
@@ -212,15 +212,42 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                 return 'Invalid rook movement.';
             }
 
-            for (let i = 0; i < Math.abs(verticalDisplacement); i++) {
-
+            if (verticalDisplacement > 0) {         // Up
+                for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
+                    if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2]] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else if (verticalDisplacement < 0) {    // Down
+                for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
+                    if (currentBoard[Number(pieceMovedArrayPos[0]) + i][pieceMovedArrayPos[2]] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
             }
         }
         else if (Math.abs(horizontalDisplacement) > 0) {
             if (verticalDisplacement !== 0) {
                 return 'Invalid rook movement.';
             }
+
+            if (horizontalDisplacement > 0) {       // Left
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                    if (currentBoard[pieceMovedArrayPos[0]][pieceMovedArrayPos[2] - i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else if (horizontalDisplacement < 0) {  // Right
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                    if (currentBoard[pieceMovedArrayPos[0]][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
         }
+        return 0;
     }
     
 
@@ -288,6 +315,6 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKB', 'c3');
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKR', 'c3');
 console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WKB', 'a5'))
+console.log(checkIfPieceMovedProperly(gameHistory, 'WKR', 'a4'))
