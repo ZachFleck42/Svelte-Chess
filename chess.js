@@ -253,7 +253,81 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
 
     // Queen logic
     if (pieceMoved[2] === 'Q') {
-
+        if (verticalDisplacement > 0) {
+            if (Math.abs(verticalDisplacement) === Math.abs(horizontalDisplacement)) {
+                if (horizontalDisplacement > 0) {           // Up-left
+                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                        if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2] - i] !== 'x') {
+                            return 'There\'s a piece in your way.';
+                        }
+                    }
+                }
+                else if (horizontalDisplacement < 0) {      // Up-right
+                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                        if (currentBoard[pieceMovedArrayPos[0] - i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+                            return 'There\'s a piece in your way.';
+                        }
+                    }
+                }
+            }
+            else if (horizontalDisplacement === 0) {        // Straight up
+                for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
+                    if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2]] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else {
+                return 'Invalid queen movement.';
+            }
+        }
+        else if (verticalDisplacement < 0) {
+            if (Math.abs(verticalDisplacement) === Math.abs(horizontalDisplacement)) {
+                if (horizontalDisplacement > 0) {           // Down-left
+                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                        if (currentBoard[Number(pieceMovedArrayPos[0]) + i][pieceMovedArrayPos[2] - i] !== 'x') {
+                            return 'There\'s a piece in your way.';
+                        }
+                    }
+                }
+                else if (horizontalDisplacement < 0 ) {     // Down-right
+                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                        if (currentBoard[Number(pieceMovedArrayPos[0]) + i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+                            return 'There\'s a piece in your way.';
+                        }
+                    }
+                }
+            }
+            else if (horizontalDisplacement === 0) {        // Straight down
+                for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
+                    if (currentBoard[Number(pieceMovedArrayPos[0]) + i][pieceMovedArrayPos[2]] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else {
+                return 'Invalid queen movement.';
+            }
+        }
+        else if (verticalDisplacement === 0) {
+            if (horizontalDisplacement > 0) {               // Straight left
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                    if (currentBoard[pieceMovedArrayPos[0]][pieceMovedArrayPos[2] - i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+            else if (horizontalDisplacement < 0) {          // Straight right
+                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
+                    console.log("hi")
+                    console.log(currentBoard[pieceMovedArrayPos[0]][Number(pieceMovedArrayPos[2]) + i])
+                    if (currentBoard[pieceMovedArrayPos[0]][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
+                        return 'There\'s a piece in your way.';
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     // King logic
@@ -315,6 +389,6 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WKR', 'c3');
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'c3');
 console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WKR', 'a4'))
+console.log(checkIfPieceMovedProperly(gameHistory, 'WQQ', 'c8'))
