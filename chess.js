@@ -23,16 +23,16 @@ const initialBoard = [
 let gameHistory = [initialBoard];
 
 
-function getSquare(arrayPos) {
-    return boardSquares[Number(arrayPos[0])][Number(arrayPos[2])];
+function getSquareFromCoordinates(coordinatesArray) {
+    return boardSquares[coordinatesArray[0]][coordinatesArray[1]];
 }
 
 
-function getSquareArrayPos(square) {
+function getSquareCoordinates(square) {
     for (let i = 0; i < boardSquares.length; i++) {
         for (let j = 0; j < boardSquares[i].length; j++) {
             if (boardSquares[i][j] === square) {
-                return `${i},${j}`;
+                return [i, j];
             }
         }
     }
@@ -40,21 +40,106 @@ function getSquareArrayPos(square) {
 }
 
 
-function getPieceArrayPos(gameBoard, gamePiece) {
+function getPieceCoordinates(gameBoard, gamePiece) {
     for (let i = 0; i < gameBoard.length; i++) {
         for (let j = 0; j < gameBoard[i].length; j++) {
             if (gameBoard[i][j] === gamePiece) {
-                return `${i},${j}`;
+                return [i, j];
             }
         }
     }
+    return [-1, -1];
 }
+
+function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
+    let currentBoard = boardHistory.at(-1);
+    console.log(currentBoard);
+    let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
+    let destSquareCoords = getSquareCoordinates(destinationSquare);
+    let destSquareContent = currentBoard[destSquareCoords[0]][destSquareCoords[1]];
+
+    let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
+    let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
+
+    if (pieceMoved[0] === 'W') {
+        if (verticalDisplacement === 1) {
+            if (horizontalDisplacement === 0) {
+                if (destSquareContent === 'x') {
+                    return 0;
+                }
+            }
+            else if (Math.abs(horizontalDisplacement) === 1) {
+                if (destSquareContent[0] === 'B') {
+                    return 0;
+                }
+                else if (currentBoard[destSquareCoords[0] + 1][destSquareCoords[1]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
+                    if (boardHistory.at(-2)[destSquareCoords[0] - 1][destSquareCoords[1]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
+                        return 'HOLYHELL';
+                    }
+                }
+            }
+        }
+        else if (verticalDisplacement === 2 && horizontalDisplacement === 0) {
+            if (pieceCoords[0] === 6) {
+                if (destSquareContent === 'x' && currentBoard[destSquareCoords[0] + 1][destSquareCoords[1]] === 'x') {
+                    return 0;
+                }
+            }
+        }
+    }
+    else if (pieceMoved[0] === 'B') {
+        if (verticalDisplacement === -1) {
+            if (horizontalDisplacement === 0) {
+                if (destSquareContent === 'x') {
+                    return 0;
+                }
+            }
+            else if (Math.abs(horizontalDisplacement) === 1) {
+                if (destSquareContent[0] === 'W') {
+                    return 0;
+                }
+                else if (boardHistory.at(-2)[destSquareCoords[0] + 1][destSquareCoords[1]] === ('W' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destSquareCoords[0] - 1][destSquareCoords[1]] === ('W' + destinationSquare[0].toUpperCase() + 'P')) {
+                    return 'HOLYHELL';
+                }
+            }
+        }
+        else if (verticalDisplacement === -2 && horizontalDisplacement === 0) {
+            if (pieceCoords[0] === 1) {
+                if (destSquareContent === 'x' && currentBoard[destSquareCoords[0] - 1][destSquareCoords[1]] === 'x') {
+                    return 0;
+                }
+            }
+        }
+    }
+    return 'Invalid pawn movement';
+}
+
+function verifyValidKnightMove(gameHistory, pieceMoved, destinationSquare) {
+    
+}
+
+function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
+    
+}
+
+function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
+    
+}
+
+function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
+    
+}
+
+function verifyValidKingMove(gameHistory, pieceMoved, destinationSquare) {
+    
+}
+
 
 
 function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
-    let pieceMovedArrayPos = getPieceArrayPos(currentBoard, pieceMoved);
-    let destinationSquareArrayPos = getSquareArrayPos(destinationSquare);
+    let pieceMovedArrayPos = getPieceCoordinates(currentBoard, pieceMoved);
+    let destinationSquareArrayPos = getSquareCoordinates(destinationSquare);
     let destinationSquareContent = currentBoard[destinationSquareArrayPos[0]][destinationSquareArrayPos[2]];
 
     // Verify destinationSquare is on the board
@@ -76,81 +161,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
 
     // Pawn logic
     if (pieceMoved[2] === 'P') {
-        // White pawns
-        if (pieceMoved[0] === 'W') {
-            if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 1) {
-                if (pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-                    if (destinationSquareContent === 'x') {
-                        return 0;
-                    }
-                    else {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-                else if (Math.abs(pieceMovedArrayPos[2] - destinationSquareArrayPos[2]) === 1) {
-                    if (destinationSquareContent[0] === 'B') {
-                        return 0;
-                    }
-                    else if (boardHistory.at(-2)[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
-                        return 'HOLYHELL';
-                    }
-                    else {
-                        return 'There\'s no piece to capture there.';
-                    }
-                }
-            }
-            else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === 2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-                if (pieceMovedArrayPos[0] === '6') {
-                    if (destinationSquareContent === 'x' && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === 'x') {
-                        return 0;
-                    }
-                    else {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-                else {
-                    return 'You can only move a pawn two spaces forward from its starting position.';
-                }
-            }
-        }
-        // Black pawns
-        else if (pieceMoved[0] === 'B') {
-            if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -1) {
-                if (pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-                    if (destinationSquareContent === 'x') {
-                        return 0;
-                    }
-                    else {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-                else if (Math.abs(pieceMovedArrayPos[2] - destinationSquareArrayPos[2]) === 1) {
-                    if (destinationSquareContent[0] === 'W') {
-                        return 0;
-                    }
-                    else if (boardHistory.at(-2)[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destinationSquareArrayPos[0] - 1][destinationSquareArrayPos[2]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
-                        return 'HOLYHELL';
-                    }
-                    else {
-                        return 'There\'s no piece to capture there.';
-                    }
-                }
-            }
-            else if (pieceMovedArrayPos[0] - destinationSquareArrayPos[0] === -2 && pieceMovedArrayPos[2] === destinationSquareArrayPos[2]) {
-                if (pieceMovedArrayPos[0] === '1') {
-                    if (destinationSquareContent === 'x' && currentBoard[Number(destinationSquareArrayPos[0]) + 1][destinationSquareArrayPos[2]] === 'x') {
-                        return 0;
-                    }
-                    else {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-                else {
-                    return 'You can only move a pawn two spaces forward from its starting position.';
-                }
-            }
-        }
-        return 'Invalid pawn movement.';
+      
     }
     
     let verticalDisplacement = pieceMovedArrayPos[0] - destinationSquareArrayPos[0];
@@ -332,7 +343,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         if (Math.abs(horizontalDisplacement) <= 1 && Math.abs(verticalDisplacement) <=1) {
             return 0;
         }
-        else if (pieceMoved[0] === 'W' && getSquare(pieceMovedArrayPos) === 'e1') {
+        else if (pieceMoved[0] === 'W' && getSquareFromCoordinates(pieceMovedArrayPos) === 'e1') {
             if (destinationSquare === 'a1' || destinationSquare === 'c1') {
                 if (currentBoard[7][0] === 'WQR' && currentBoard[7][1] === 'x' && currentBoard[7][2] === 'x' && currentBoard[7][3] === 'x') {
                     for (let i = 0; i < boardHistory.length; i++) {
@@ -354,7 +365,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
                 }
             }
         }
-        else if (pieceMoved[0] === 'B' && getSquare(pieceMovedArrayPos) === 'e8') {
+        else if (pieceMoved[0] === 'B' && getSquareFromCoordinates(pieceMovedArrayPos) === 'e8') {
             if (destinationSquare === 'a8' || destinationSquare === 'c8') {
                 if (currentBoard[0][0] === 'BQR' && currentBoard[0][1] === 'x' && currentBoard[0][2] === 'x' && currentBoard[0][3] === 'x') {
                     for (let i = 0; i < boardHistory.length; i++) {
@@ -387,10 +398,11 @@ function updateBoardStandard(oldBoard, pieceMoved, destinationSquare) {
             return row.map(
                 (square, indexOfSquareInRow) => {
                     for (let i = 0; i < row.length; i++) {
+                        let destSquareCoords = getSquareCoordinates(destinationSquare);
                         if (square === pieceMoved) {
                             return 'x';
                         }
-                        else if (getSquareArrayPos(destinationSquare) === `${indexOfRowInBoard},${indexOfSquareInRow}`) {
+                        else if (destSquareCoords[0] === indexOfRowInBoard && destSquareCoords[1] === indexOfSquareInRow) {
                             return pieceMoved;
                         }
                         else {
@@ -430,9 +442,5 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQN', 'a3');
-let testBoard2 = updateBoardStandard(gameHistory.at(-1), 'WDP', 'd5');
-let testBoard3 = updateBoardStandard(gameHistory.at(-1), 'WQB', 'e5');
-let testBoard4 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'd2');
-console.log(gameHistory.at(-1));
-console.log(checkIfPieceMovedProperly(gameHistory, 'WKK', 'c1'))
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WAP', 'a3');
+console.log(verifyValidPawnMove(gameHistory, 'WAP', 'a4'))
