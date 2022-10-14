@@ -57,9 +57,12 @@ function hasPieceMoved(boardHistory, piece) {
             return 1;
         }
     }
+
+    return 0;
 }
 
-
+// Returns 0 if invalid move, 1 if valid capturing move, 
+// 2 if valid forward movement (non-capturing), and 3 if valid en passant
 function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
 
@@ -77,7 +80,7 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
     if (Math.abs(verticalDisplacement) === 1) {
         //  Check for valid one-space move
         if (horizontalDisplacement === 0 && destSquareContent === 'x') {
-            return 1;
+            return 2;
         }
         // Check for valid capturing move
         else if (Math.abs(horizontalDisplacement) === 1) {
@@ -87,7 +90,7 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
                 let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]]
                 let enPasCheck2 = boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]]
                 if (enPasCheck1 === enPasCheck2 && enPasCheck1[2] === 'P') {
-                    return 'HOLYHELL'
+                    return 3;
                 }
             }
             else return 1;
@@ -101,11 +104,14 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
 
         let vertDirection = (verticalDisplacement < 0) ? 1 : -1;
         if (currentBoard[pieceCoords[0] + vertDirection][pieceCoords[1]] === 'x') {
-            return 1;
+            return 2;
         }
     }
+
+    return 0;
 }
 
+// Returns 0 if invalid move and 1 if valid normal/capturing move
 function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
     let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -121,6 +127,7 @@ function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
     }
 }
 
+// Returns 0 if invalid move and 1 if valid normal/capturing move
 function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
     let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -128,7 +135,7 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
-    // Verify bishop is moving diagnoally
+    // Verify bishop is moving diagonally
     if (Math.abs(verticalDisplacement) !== Math.abs(horizontalDisplacement)) {
         return 0;
     }
@@ -146,6 +153,7 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
     return 1;
 }
 
+// Returns 0 if invalid move and 1 if valid normal/capturing move
 function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
     let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -174,6 +182,7 @@ function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
     return 1;
 }
 
+// Returns 0 if invalid move and 1 if valid normal/capturing move
 function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
     let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -206,6 +215,7 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     return 1;
 }
 
+// Returns 0 if invalid move, 1 if valid normal/capturing move, and 2 if valid castling move
 function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
 
@@ -244,13 +254,15 @@ function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
                     // If the rook is present and has not moved, castling is possible
                     if (i === squaresToCheck) {
                         if (squareContent[2] === 'R' && !hasPieceMoved(boardHistory, squareContent)) {
-                            return 'CASTLE';
+                            return 2;
                         }
                     }
                 }
             }
         }
     }
+
+    return 0;
 }
 
 function isSquareInCheck(boardHistory, square, playerColor) {
@@ -263,7 +275,7 @@ function isSquareInCheck(boardHistory, square, playerColor) {
             if (currentSquareContent !== 'x' && currentSquareContent[0] === enemyColor) {
                 switch (currentSquareContent[2]) {
                     case 'P':
-                        if(verifyValidPawnMove(boardHistory, currentSquareContent, square)) {
+                        if (verifyValidPawnMove(boardHistory, currentSquareContent, square) === 1) {
                             return 1;
                         } else continue;
                     case 'N':
@@ -282,11 +294,17 @@ function isSquareInCheck(boardHistory, square, playerColor) {
                         if(verifyValidQueenMove(currentBoard, currentSquareContent, square)) {
                             return 1;
                         } else continue;
+                    case 'K':
+                        if (verifyValidKingMove(boardHistory, currentSquareContent, square) === 1) {
+                            return 1;
+                        } else continue;
                     default: continue;
                 }
             }
         }
     }
+    
+    return 0;
 }
 
 
@@ -381,11 +399,12 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(GAMEHISTORY.at(-1), 'BQN', 'c3');
-let testBoard2 = updateBoardStandard(GAMEHISTORY.at(-1), 'BDP', 'd3');
-let testBoard3 = updateBoardStandard(GAMEHISTORY.at(-1), 'BQB', 'f4');
-let testBoard4 = updateBoardStandard(GAMEHISTORY.at(-1), 'BQQ', 'd2');
+let testBoard1 = updateBoardStandard(GAMEHISTORY.at(-1), 'WQN', 'c3');
+let testBoard2 = updateBoardStandard(GAMEHISTORY.at(-1), 'WDP', 'd3');
+let testBoard3 = updateBoardStandard(GAMEHISTORY.at(-1), 'WQB', 'f4');
+let testBoard4 = updateBoardStandard(GAMEHISTORY.at(-1), 'WQQ', 'd2');
 
 let currentBoard = GAMEHISTORY.at(-1); console.log(currentBoard);
 
-console.log(verifyValidKingMove(GAMEHISTORY, 'BKK', 'c8'))
+console.log(verifyValidKingMove(GAMEHISTORY, 'WKK', 'a1'));
+console.log(isSquareInCheck(GAMEHISTORY, 'b5', 'W'))
