@@ -36,8 +36,6 @@ function getCoordinatesFromSquare(square) {
             }
         }
     }
-
-    return [-1, -1];
 }
 
 
@@ -49,8 +47,6 @@ function getPieceCoordinates(gameBoard, gamePiece) {
             }
         }
     }
-
-    return [-1, -1];
 }
 
 function hasPieceMoved(boardHistory, piece) {
@@ -74,14 +70,18 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
     
+    // Verify pawn is moving in the right direction based on its color
     if (pieceMoved[2] === 'W' && verticalDisplacement < 1) return 0;
     if (pieceMoved[2] === 'B' && verticalDisplacement > 1) return 0;
-    
+
     if (Math.abs(verticalDisplacement) === 1) {
+        //  Check for valid one-space move
         if (horizontalDisplacement === 0 && destSquareContent === 'x') {
             return 1;
         }
+        // Check for valid capturing move
         else if (Math.abs(horizontalDisplacement) === 1) {
+            // Check for en passant
             if (destSquareContent === 'x') {
                 let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]]
                 let enPasCheck2 = boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]]
@@ -91,21 +91,18 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
             }
             else return 1;
         }
-        else return 0;
     }
+    // Check for valid two-space move
     else if (Math.abs(verticalDisplacement) === 2) {
         if (destSquareContent !== 'x') return 0;
         if (horizontalDisplacement !== 0) return 0;
         if (hasPieceMoved(boardHistory, pieceMoved)) return 0;
 
         let vertDirection = (verticalDisplacement < 0) ? 1 : -1;
-        if (currentBoard[pieceCoords[0] + vertDirection][pieceCoords[1]] !== 'x') {
-            return 0;
+        if (currentBoard[pieceCoords[0] + vertDirection][pieceCoords[1]] === 'x') {
+            return 1;
         }
-
-        return 1;
     }
-    else return 0;
 }
 
 function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
@@ -121,8 +118,6 @@ function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
     else if ((Math.abs(horizontalDisplacement) === 2 && Math.abs(verticalDisplacement) === 1)) {
         return 1;
     }
-
-    return 0;
 }
 
 function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
@@ -132,6 +127,7 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
+    // Verify bishop is moving diagnoally
     if (Math.abs(verticalDisplacement) !== Math.abs(horizontalDisplacement)) {
         return 0;
     }
@@ -139,6 +135,7 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
     let vertDirection = (verticalDisplacement < 0) ? 1 : -1;
     let horizDirection = (horizontalDisplacement < 0) ? 1: -1;
 
+    // Look for any pieces in the bishop's path
     for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
         if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
             return 0;
@@ -155,6 +152,7 @@ function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
+    // Verify rook is moving straight up/down/left/right
     if (verticalDisplacement !== 0 && horizontalDisplacement !== 0) return 0;
 
     let vertDirection = 0;
@@ -165,6 +163,7 @@ function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
     if (horizontalDisplacement < 0) horizDirection = 1;
     else if (horizontalDisplacement > 0) horizDirection = -1;
 
+    // Look for any pieces in the rook's path
     for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
         if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
             return 0;
@@ -181,6 +180,7 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
+    // Verify queen is moving diagonally or straight up/down/left/right
     if (Math.abs(verticalDisplacement) !== Math.abs(horizontalDisplacement)) {
         if (verticalDisplacement !== 0 && horizontalDisplacement !== 0) {
             return 0;
@@ -195,6 +195,7 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     if (horizontalDisplacement < 0) horizDirection = 1;
     else if (horizontalDisplacement > 0) horizDirection = -1;
 
+    // Look for any pieces in the queen's path
     for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
         if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
             return 0;
@@ -212,8 +213,7 @@ function verifyValidKingMove(gameHistory, pieceMoved, destinationSquare) {
 }
 
 
-
-function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) {
+function verifyProperMovement(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
     let pieceMovedArrayPos = getPieceCoordinates(currentBoard, pieceMoved);
     let destinationSquareArrayPos = getCoordinatesFromSquare(destinationSquare);
@@ -236,6 +236,7 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         }
     }
 
+    // Check piece-specific movement
     switch (pieceMoved[2]) {
         case 'P':
             return verifyValidPawnMove;
@@ -249,58 +250,6 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
             return verifyValidQueenMove;
         case 'K':
             return verifyValidKingMove;
-    }
-
-    // King logic
-    if (pieceMoved[2] === 'K') {
-        if (Math.abs(horizontalDisplacement) <= 1 && Math.abs(verticalDisplacement) <=1) {
-            return 0;
-        }
-        else if (pieceMoved[0] === 'W' && getSquareFromCoordinates(pieceMovedArrayPos) === 'e1') {
-            if (destinationSquare === 'a1' || destinationSquare === 'c1') {
-                if (currentBoard[7][0] === 'WQR' && currentBoard[7][1] === 'x' && currentBoard[7][2] === 'x' && currentBoard[7][3] === 'x') {
-                    for (let i = 0; i < boardHistory.length; i++) {
-                        if (boardHistory[i][7][0] !== 'WQR' || boardHistory[i][7][4] !== 'WKK') {
-                            return 'Invalid castle attempt.';
-                        }
-                    }
-                    return 'CASTLE';
-                }
-            }
-            else if (destinationSquare === 'g1' || 'h1') {
-                if (currentBoard[7][7] === 'WKR' && currentBoard[7][6] === 'x' && currentBoard[7][5] === 'x') {
-                    for (let i = 0; i < boardHistory.length; i++) {
-                        if (boardHistory[i][7][7] !== 'WKR' || boardHistory[i][7][4] !== 'WKK') {
-                            return 'Invalid castle attempt.';
-                        }
-                    }
-                    return 'CASTLE';
-                }
-            }
-        }
-        else if (pieceMoved[0] === 'B' && getSquareFromCoordinates(pieceMovedArrayPos) === 'e8') {
-            if (destinationSquare === 'a8' || destinationSquare === 'c8') {
-                if (currentBoard[0][0] === 'BQR' && currentBoard[0][1] === 'x' && currentBoard[0][2] === 'x' && currentBoard[0][3] === 'x') {
-                    for (let i = 0; i < boardHistory.length; i++) {
-                        if (boardHistory[i][0][0] !== 'BQR' || boardHistory[i][0][4] !== 'BKK') {
-                            return 'Invalid castle attempt.';
-                        }
-                    }
-                    return 'CASTLE';
-                }
-            }
-            else if (destinationSquare === 'g8' || destinationSquare === 'h8') {
-                if (currentBoard[0][7] === 'BKR' && currentBoard[0][6] === 'x' && currentBoard[0][5] === 'x') {
-                    for (let i = 0; i < boardHistory.length; i++) {
-                        if (boardHistory[i][0][7] !== 'BKR' || boardHistory[i][0][4] !== 'BKK') {
-                            return 'Invalid castle attempt.';
-                        }
-                    }
-                    return 'CASTLE';
-                }
-            }
-        }
-        return 'Invalid king movement.';
     }
 }
 
