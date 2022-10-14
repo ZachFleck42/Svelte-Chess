@@ -23,12 +23,12 @@ const INITIALBOARD = [
 let GAMEHISTORY = [INITIALBOARD];
 
 
-function getSquareFromCoordinates(coordinatesArray) {
-    return BOARDSQUARES[coordinatesArray[0]][coordinatesArray[1]];
+function getSquareFromCoordinates(coordinates) {
+    return BOARDSQUARES[coordinates[0]][coordinates[1]];
 }
 
 
-function getSquareCoordinates(square) {
+function getCoordinatesFromSquare(square) {
     for (let i = 0; i < BOARDSQUARES.length; i++) {
         for (let j = 0; j < BOARDSQUARES[i].length; j++) {
             if (BOARDSQUARES[i][j] === square) {
@@ -52,14 +52,12 @@ function getPieceCoordinates(gameBoard, gamePiece) {
 }
 
 function hasPieceMoved(boardHistory, piece) {
-    let pieceInitialCoords = getPieceCoordinates(boardHistory[0], piece);
-
-    for (let i = 0; i < boardHistory.length; i++) {
+    let pieceInitialCoords = getPieceCoordinates(INITIALBOARD, piece);
+    for (let i = 1; i < boardHistory.length; i++) {
         if (boardHistory[i][pieceInitialCoords[0]][pieceInitialCoords[1]] !== piece) {
             return 0;
         }
     }
-    
     return 1;
 }
 
@@ -68,7 +66,7 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
 
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-    let destSquareCoords = getSquareCoordinates(destinationSquare);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
     let destSquareContent = currentBoard[destSquareCoords[0]][destSquareCoords[1]];
 
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
@@ -130,7 +128,7 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
 
 function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-    let destSquareCoords = getSquareCoordinates(destinationSquare);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
@@ -147,7 +145,7 @@ function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
 
 function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-    let destSquareCoords = getSquareCoordinates(destinationSquare);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
@@ -170,7 +168,7 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
 
 function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-    let destSquareCoords = getSquareCoordinates(destinationSquare);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
@@ -206,7 +204,7 @@ function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
 
 function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-    let destSquareCoords = getSquareCoordinates(destinationSquare);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
@@ -242,7 +240,10 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
 }
 
 function verifyValidKingMove(gameHistory, pieceMoved, destinationSquare) {
-    
+    if (Math.abs(horizontalDisplacement) <= 1 && Math.abs(verticalDisplacement) <=1) {
+        return 1;
+    }
+
 }
 
 
@@ -250,7 +251,7 @@ function verifyValidKingMove(gameHistory, pieceMoved, destinationSquare) {
 function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
     let pieceMovedArrayPos = getPieceCoordinates(currentBoard, pieceMoved);
-    let destinationSquareArrayPos = getSquareCoordinates(destinationSquare);
+    let destinationSquareArrayPos = getCoordinatesFromSquare(destinationSquare);
     let destinationSquareContent = currentBoard[destinationSquareArrayPos[0]][destinationSquareArrayPos[2]];
 
     // Verify destinationSquare is on the board
@@ -270,101 +271,19 @@ function checkIfPieceMovedProperly(boardHistory, pieceMoved, destinationSquare) 
         }
     }
 
-    // Pawn logic
-    if (pieceMoved[2] === 'P') {
-      
-    }
-    
-    // Knight logic
-    if (pieceMoved[2] === 'N') {
-
-    }
-    
-    // Bishop logic
-    if (pieceMoved[2] === 'B') {
-
-    }
-    
-    // Rook logic
-    if (pieceMoved[2] === 'R') {
-
-    }
-    
-    // Queen logic
-    if (pieceMoved[2] === 'Q') {
-        if (verticalDisplacement > 0) {
-            if (Math.abs(verticalDisplacement) === Math.abs(horizontalDisplacement)) {
-                if (horizontalDisplacement > 0) {           // Up-left
-                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                        if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2] - i] !== 'x') {
-                            return 'There\'s a piece in your way.';
-                        }
-                    }
-                }
-                else if (horizontalDisplacement < 0) {      // Up-right
-                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                        if (currentBoard[pieceMovedArrayPos[0] - i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
-                            return 'There\'s a piece in your way.';
-                        }
-                    }
-                }
-            }
-            else if (horizontalDisplacement === 0) {        // Straight up
-                for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
-                    if (currentBoard[pieceMovedArrayPos[0] - i][pieceMovedArrayPos[2]] !== 'x') {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-            }
-            else {
-                return 'Invalid queen movement.';
-            }
-        }
-        else if (verticalDisplacement < 0) {
-            if (Math.abs(verticalDisplacement) === Math.abs(horizontalDisplacement)) {
-                if (horizontalDisplacement > 0) {           // Down-left
-                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                        if (currentBoard[Number(pieceMovedArrayPos[0]) + i][pieceMovedArrayPos[2] - i] !== 'x') {
-                            return 'There\'s a piece in your way.';
-                        }
-                    }
-                }
-                else if (horizontalDisplacement < 0 ) {     // Down-right
-                    for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                        if (currentBoard[Number(pieceMovedArrayPos[0]) + i][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
-                            return 'There\'s a piece in your way.';
-                        }
-                    }
-                }
-            }
-            else if (horizontalDisplacement === 0) {        // Straight down
-                for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
-                    if (currentBoard[Number(pieceMovedArrayPos[0]) + i][pieceMovedArrayPos[2]] !== 'x') {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-            }
-            else {
-                return 'Invalid queen movement.';
-            }
-        }
-        else if (verticalDisplacement === 0) {
-            if (horizontalDisplacement > 0) {               // Straight left
-                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                    if (currentBoard[pieceMovedArrayPos[0]][pieceMovedArrayPos[2] - i] !== 'x') {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-            }
-            else if (horizontalDisplacement < 0) {          // Straight right
-                for (let i = 1; i < Math.abs(horizontalDisplacement); i++) {
-                    if (currentBoard[pieceMovedArrayPos[0]][Number(pieceMovedArrayPos[2]) + i] !== 'x') {
-                        return 'There\'s a piece in your way.';
-                    }
-                }
-            }
-        }
-        return 0;
+    switch (pieceMoved[2]) {
+        case 'P':
+            return verifyValidPawnMove;
+        case 'N':
+            return verifyValidKnightMove;
+        case 'B':
+            return verifyValidBishopMove;
+        case 'R':
+            return verifyValidRookMove;
+        case 'Q':
+            return verifyValidQueenMove;
+        case 'K':
+            return verifyValidKingMove;
     }
 
     // King logic
@@ -427,7 +346,7 @@ function updateBoardStandard(oldBoard, pieceMoved, destinationSquare) {
             return row.map(
                 (square, indexOfSquareInRow) => {
                     for (let i = 0; i < row.length; i++) {
-                        let destSquareCoords = getSquareCoordinates(destinationSquare);
+                        let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
                         if (square === pieceMoved) {
                             return 'x';
                         }
