@@ -36,6 +36,7 @@ function getCoordinatesFromSquare(square) {
             }
         }
     }
+
     return [-1, -1];
 }
 
@@ -48,6 +49,7 @@ function getPieceCoordinates(gameBoard, gamePiece) {
             }
         }
     }
+
     return [-1, -1];
 }
 
@@ -71,59 +73,39 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
 
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
-
-    if (pieceMoved[0] === 'W') {
-        if (verticalDisplacement === 1) {
-            if (horizontalDisplacement === 0) {
-                if (destSquareContent === 'x') {
-                    return 1;
-                }
-            }
-            else if (Math.abs(horizontalDisplacement) === 1) {
-                if (destSquareContent[0] === 'B') {
-                    return 1;
-                }
-                else if (currentBoard[destSquareCoords[0] + 1][destSquareCoords[1]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
-                    if (boardHistory.at(-2)[destSquareCoords[0] - 1][destSquareCoords[1]] === ('B' + destinationSquare[0].toUpperCase() + 'P')) {
-                        return 'HOLYHELL';
-                    }
-                }
-            }
+    
+    if (pieceMoved[2] === 'W' && verticalDisplacement < 1) return 0;
+    if (pieceMoved[2] === 'B' && verticalDisplacement > 1) return 0;
+    
+    if (Math.abs(verticalDisplacement) === 1) {
+        if (horizontalDisplacement === 0 && destSquareContent === 'x') {
+            return 1;
         }
-        else if (verticalDisplacement === 2 && horizontalDisplacement === 0) {
-            if (pieceCoords[0] === 6) {
-                if (destSquareContent === 'x' && currentBoard[destSquareCoords[0] + 1][destSquareCoords[1]] === 'x') {
-                    return 1;
+        else if (Math.abs(horizontalDisplacement) === 1) {
+            if (destSquareContent === 'x') {
+                let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]]
+                let enPasCheck2 = boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]]
+                if (enPasCheck1 === enPasCheck2 && enPasCheck1[2] === 'P') {
+                    return 'HOLYHELL'
                 }
             }
+            else return 1;
         }
+        else return 0;
     }
-    else if (pieceMoved[0] === 'B') {
-        if (verticalDisplacement === -1) {
-            if (horizontalDisplacement === 0) {
-                if (destSquareContent === 'x') {
-                    return 1;
-                }
-            }
-            else if (Math.abs(horizontalDisplacement) === 1) {
-                if (destSquareContent[0] === 'W') {
-                    return 1;
-                }
-                else if (boardHistory.at(-2)[destSquareCoords[0] + 1][destSquareCoords[1]] === ('W' + destinationSquare[0].toUpperCase() + 'P') && currentBoard[destSquareCoords[0] - 1][destSquareCoords[1]] === ('W' + destinationSquare[0].toUpperCase() + 'P')) {
-                    return 'HOLYHELL';
-                }
-            }
-        }
-        else if (verticalDisplacement === -2 && horizontalDisplacement === 0) {
-            if (pieceCoords[0] === 1) {
-                if (destSquareContent === 'x' && currentBoard[destSquareCoords[0] - 1][destSquareCoords[1]] === 'x') {
-                    return 1;
-                }
-            }
-        }
-    }
+    else if (Math.abs(verticalDisplacement) === 2) {
+        if (destSquareContent !== 'x') return 0;
+        if (horizontalDisplacement !== 0) return 0;
+        if (hasPieceMoved(boardHistory, pieceMoved)) return 0;
 
-    return 0;
+        let vertDirection = (verticalDisplacement < 0) ? 1 : -1;
+        if (currentBoard[pieceCoords[0] + vertDirection][pieceCoords[1]] !== 'x') {
+            return 0;
+        }
+
+        return 1;
+    }
+    else return 0;
 }
 
 function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
@@ -154,11 +136,11 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
         return 0;
     }
 
-    let verticalModifier = (verticalDisplacement < 0) ? 1 : -1;
-    let horizontalModifier = (horizontalDisplacement < 0) ? 1: -1;
+    let vertDirection = (verticalDisplacement < 0) ? 1 : -1;
+    let horizDirection = (horizontalDisplacement < 0) ? 1: -1;
 
     for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
-        if (currentBoard[pieceCoords[0] + (i  * verticalModifier)][pieceCoords[1] + (i * horizontalModifier)] !== 'x') {
+        if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
             return 0;
         }
     }
@@ -173,28 +155,18 @@ function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
-    if (verticalDisplacement !== 0 && horizontalDisplacement !== 0) {
-        return 0;
-    }
+    if (verticalDisplacement !== 0 && horizontalDisplacement !== 0) return 0;
 
-    let verticalModifier = 0
-    if (verticalDisplacement < 0) {
-        verticalModifier = 1
-    }
-    else if (verticalDisplacement > 0) {
-        verticalModifier = -1
-    }
+    let vertDirection = 0;
+    if (verticalDisplacement < 0) vertDirection = 1;
+    else if (verticalDisplacement > 0) vertDirection = -1;
     
-    let horizontalModifier = 0
-    if (horizontalDisplacement < 0) {
-        horizontalModifier = 1
-    }
-    else if (horizontalDisplacement > 0) {
-        horizontalModifier = -1
-    }
+    let horizDirection = 0;
+    if (horizontalDisplacement < 0) horizDirection = 1;
+    else if (horizontalDisplacement > 0) horizDirection = -1;
 
     for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
-        if (currentBoard[pieceCoords[0] + (i  * verticalModifier)][pieceCoords[1] + (i * horizontalModifier)] !== 'x') {
+        if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
             return 0;
         }
     }
@@ -215,27 +187,20 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
         }
     }
 
-    let verticalModifier = 0
-    if (verticalDisplacement < 0) {
-        verticalModifier = 1
-    }
-    else if (verticalDisplacement > 0) {
-        verticalModifier = -1
-    }
+    let vertDirection = 0;
+    if (verticalDisplacement < 0) vertDirection = 1;
+    else if (verticalDisplacement > 0) vertDirection = -1;
     
-    let horizontalModifier = 0
-    if (horizontalDisplacement < 0) {
-        horizontalModifier = 1
-    }
-    else if (horizontalDisplacement > 0) {
-        horizontalModifier = -1
-    }
+    let horizDirection = 0;
+    if (horizontalDisplacement < 0) horizDirection = 1;
+    else if (horizontalDisplacement > 0) horizDirection = -1;
 
     for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
-        if (currentBoard[pieceCoords[0] + (i  * verticalModifier)][pieceCoords[1] + (i * horizontalModifier)] !== 'x') {
+        if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
             return 0;
         }
     }
+
     return 1;
 }
 
@@ -361,7 +326,7 @@ function updateBoardStandard(oldBoard, pieceMoved, destinationSquare) {
             )
         }
     )
-    gameHistory.push(newBoard)
+    GAMEHISTORY.push(newBoard)
     return newBoard;
 }
 
@@ -390,7 +355,14 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'c3');
-let currentBoard = gameHistory.at(-1);
-console.log(currentBoard)
-console.log(verifyValidQueenMove(currentBoard, 'WQQ', 'd4'))
+let testBoard1 = updateBoardStandard(GAMEHISTORY.at(-1), 'WCP', 'c5');
+let testBoard2 = updateBoardStandard(GAMEHISTORY.at(-1), 'BBP', 'b5');
+
+let currentBoard = GAMEHISTORY.at(-1); console.log(currentBoard);
+
+if(verifyValidPawnMove(GAMEHISTORY, 'WCP', 'b6')) {
+    console.log("VALID");
+}
+else {
+    console.log("INVALID");
+}
