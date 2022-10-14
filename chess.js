@@ -1,4 +1,4 @@
-const boardSquares = [
+const BOARDSQUARES = [
     ['a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'],
     ['a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7'],
     ['a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6'],
@@ -9,7 +9,7 @@ const boardSquares = [
     ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
 ];
 
-const initialBoard = [
+const INITIALBOARD = [
     ['BQR', 'BQN', 'BQB', 'BQQ', 'BKK', 'BKB', 'BKN', 'BKR'],
     ['BAP', 'BBP', 'BCP', 'BDP', 'BEP', 'BFP', 'BGP', 'BHP'],
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
@@ -20,18 +20,18 @@ const initialBoard = [
     ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 ];
 
-let gameHistory = [initialBoard];
+let GAMEHISTORY = [INITIALBOARD];
 
 
 function getSquareFromCoordinates(coordinatesArray) {
-    return boardSquares[coordinatesArray[0]][coordinatesArray[1]];
+    return BOARDSQUARES[coordinatesArray[0]][coordinatesArray[1]];
 }
 
 
 function getSquareCoordinates(square) {
-    for (let i = 0; i < boardSquares.length; i++) {
-        for (let j = 0; j < boardSquares[i].length; j++) {
-            if (boardSquares[i][j] === square) {
+    for (let i = 0; i < BOARDSQUARES.length; i++) {
+        for (let j = 0; j < BOARDSQUARES[i].length; j++) {
+            if (BOARDSQUARES[i][j] === square) {
                 return [i, j];
             }
         }
@@ -49,6 +49,18 @@ function getPieceCoordinates(gameBoard, gamePiece) {
         }
     }
     return [-1, -1];
+}
+
+function hasPieceMoved(boardHistory, piece) {
+    let pieceInitialCoords = getPieceCoordinates(boardHistory[0], piece);
+
+    for (let i = 0; i < boardHistory.length; i++) {
+        if (boardHistory[i][pieceInitialCoords[0]][pieceInitialCoords[1]] !== piece) {
+            return 0;
+        }
+    }
+    
+    return 1;
 }
 
 
@@ -199,7 +211,7 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
-    if (verticalDisplacement !== horizontalDisplacement) {
+    if (Math.abs(verticalDisplacement) !== Math.abs(horizontalDisplacement)) {
         if (verticalDisplacement !== 0 && horizontalDisplacement !== 0) {
             return 0;
         }
@@ -222,7 +234,6 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     }
 
     for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
-        console.log("hi")
         if (currentBoard[pieceCoords[0] + (i  * verticalModifier)][pieceCoords[1] + (i * horizontalModifier)] !== 'x') {
             return 0;
         }
@@ -460,7 +471,7 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQB', 'c3');
+let testBoard1 = updateBoardStandard(gameHistory.at(-1), 'WQQ', 'c3');
 let currentBoard = gameHistory.at(-1);
 console.log(currentBoard)
-console.log(verifyValidBishopMove(currentBoard, 'WQB', 'b4'))
+console.log(verifyValidQueenMove(currentBoard, 'WQQ', 'd4'))
