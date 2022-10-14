@@ -49,14 +49,14 @@ function getPieceCoordinates(gameBoard, gamePiece) {
     }
 }
 
+
 function hasPieceMoved(boardHistory, piece) {
     let pieceInitialCoords = getPieceCoordinates(INITIALBOARD, piece);
     for (let i = 1; i < boardHistory.length; i++) {
         if (boardHistory[i][pieceInitialCoords[0]][pieceInitialCoords[1]] !== piece) {
-            return 0;
+            return 1;
         }
     }
-    return 1;
 }
 
 
@@ -83,6 +83,7 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
         else if (Math.abs(horizontalDisplacement) === 1) {
             // Check for en passant
             if (destSquareContent === 'x') {
+                // This is checking to see if a pawn double-moved across the destinationSquare last turn.
                 let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]]
                 let enPasCheck2 = boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]]
                 if (enPasCheck1 === enPasCheck2 && enPasCheck1[2] === 'P') {
@@ -196,28 +197,104 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     else if (horizontalDisplacement > 0) horizDirection = -1;
 
     // Look for any pieces in the queen's path
+    let squareContent = ''
     for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
-        if (currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)] !== 'x') {
-            return 0;
-        }
+        squareContent = currentBoard[pieceCoords[0] + (i  * vertDirection)][pieceCoords[1] + (i * horizDirection)];
+        if (squareContent !== 'x') return 0;
     }
 
     return 1;
 }
 
-function verifyValidKingMove(gameHistory, pieceMoved, destinationSquare) {
+function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
+    let currentBoard = boardHistory.at(-1);
+
+    let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+    let destSquareContent = currentBoard[destSquareCoords[0]][destSquareCoords[1]];
+
+    let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
+    let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
+
+    // Verify king is moving only one space in any direction
     if (Math.abs(horizontalDisplacement) <= 1 && Math.abs(verticalDisplacement) <=1) {
         return 1;
     }
 
+    // Check for castling
+    if (Math.abs(horizontalDisplacement) > 1 && verticalDisplacement === 0) {
+        if (Math.abs(horizontalDisplacement) === 2 || destSquareContent[2] === 'R') {
+            if (!hasPieceMoved(boardHistory, pieceMoved)) {
+                let horizDirection = (horizontalDisplacement < 0) ? 1 : -1;
+                let squaresToCheck = (horizDirection === 1) ? 3 : 4;
+                let square = ''; let squareContent = '';
+
+                for (let i = 1; i <= squaresToCheck; i++) {
+                    square = getSquareFromCoordinates([pieceCoords[0], pieceCoords[1] + (i * horizDirection)]);
+                    squareContent = currentBoard[pieceCoords[0]][pieceCoords[1] + (i * horizDirection)];
+                    
+                    // All spaces between king and rook must be empty
+                    if (i <= (squaresToCheck - 1) && squareContent !== 'x') {
+                        return 0;
+                    }
+                    // Castling is not possible if the king will move through or into check
+                    if (i <= 2 && isSquareInCheck(boardHistory, square, pieceMoved[0])) {
+                        return 0;
+                    }
+                    // If the rook is present and has not moved, castling is possible
+                    if (i === squaresToCheck) {
+                        if (squareContent[2] === 'R' && !hasPieceMoved(boardHistory, squareContent)) {
+                            return 'CASTLE';
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+function isSquareInCheck(boardHistory, square, playerColor) {
+    let currentBoard = boardHistory.at(-1);
+    let enemyColor = playerColor === 'W' ? 'B' : 'W';
+
+    for (let i = 0; i < currentBoard.length; i++) {
+        for (let j = 0; j < currentBoard[i].length; j++) {
+            let currentSquareContent = currentBoard[i][j];
+            if (currentSquareContent !== 'x' && currentSquareContent[0] === enemyColor) {
+                switch (currentSquareContent[2]) {
+                    case 'P':
+                        if(verifyValidPawnMove(boardHistory, currentSquareContent, square)) {
+                            return 1;
+                        } else continue;
+                    case 'N':
+                        if(verifyValidKnightMove(currentBoard, currentSquareContent, square)) {
+                            return 1;
+                        } else continue;
+                    case 'B':
+                        if(verifyValidBishopMove(currentBoard, currentSquareContent, square)) {
+                            return 1;
+                        } else continue;
+                    case 'R':
+                        if(verifyValidRookMove(currentBoard, currentSquareContent, square)) {
+                            return 1;
+                        } else continue;
+                    case 'Q':
+                        if(verifyValidQueenMove(currentBoard, currentSquareContent, square)) {
+                            return 1;
+                        } else continue;
+                    default: continue;
+                }
+            }
+        }
+    }
 }
 
 
-function verifyProperMovement(boardHistory, pieceMoved, destinationSquare) {
+function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
-    let pieceMovedArrayPos = getPieceCoordinates(currentBoard, pieceMoved);
-    let destinationSquareArrayPos = getCoordinatesFromSquare(destinationSquare);
-    let destinationSquareContent = currentBoard[destinationSquareArrayPos[0]][destinationSquareArrayPos[2]];
+    let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
+    let destSqaureCoords = getCoordinatesFromSquare(destinationSquare);
+    let destinationSquareContent = currentBoard[destSqaureCoords[0]][destSqaureCoords[2]];
 
     // Verify destinationSquare is on the board
     if (!('abcdefgh'.includes(destinationSquare[0])) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
@@ -225,7 +302,7 @@ function verifyProperMovement(boardHistory, pieceMoved, destinationSquare) {
     }
 
     // Verify piece is not moving to the square it's already on
-    if (pieceMovedArrayPos === destinationSquareArrayPos) {
+    if (pieceCoords === destSqaureCoords) {
         return 'That\'s the same spot.';
     }
 
@@ -239,17 +316,17 @@ function verifyProperMovement(boardHistory, pieceMoved, destinationSquare) {
     // Check piece-specific movement
     switch (pieceMoved[2]) {
         case 'P':
-            return verifyValidPawnMove;
+            return verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare);
         case 'N':
-            return verifyValidKnightMove;
+            return verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare);
         case 'B':
-            return verifyValidBishopMove;
+            return verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare);
         case 'R':
-            return verifyValidRookMove;
+            return verifyValidRookMove(currentBoard, pieceMoved, destinationSquare);
         case 'Q':
-            return verifyValidQueenMove;
+            return verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare);
         case 'K':
-            return verifyValidKingMove;
+            return verifyValidKingMove(boardHistory, pieceMoved, destinationSquare);
     }
 }
 
@@ -304,14 +381,11 @@ function updateBoardEnPassant() {
         // If checkmate, end game
 
 
-let testBoard1 = updateBoardStandard(GAMEHISTORY.at(-1), 'WCP', 'c5');
-let testBoard2 = updateBoardStandard(GAMEHISTORY.at(-1), 'BBP', 'b5');
+let testBoard1 = updateBoardStandard(GAMEHISTORY.at(-1), 'BQN', 'c3');
+let testBoard2 = updateBoardStandard(GAMEHISTORY.at(-1), 'BDP', 'd3');
+let testBoard3 = updateBoardStandard(GAMEHISTORY.at(-1), 'BQB', 'f4');
+let testBoard4 = updateBoardStandard(GAMEHISTORY.at(-1), 'BQQ', 'd2');
 
 let currentBoard = GAMEHISTORY.at(-1); console.log(currentBoard);
 
-if(verifyValidPawnMove(GAMEHISTORY, 'WCP', 'b6')) {
-    console.log("VALID");
-}
-else {
-    console.log("INVALID");
-}
+console.log(verifyValidKingMove(GAMEHISTORY, 'BKK', 'c8'))
