@@ -20,9 +20,6 @@ const INITIALBOARD = [
     ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 ];
 
-let GAMEHISTORY = [INITIALBOARD];
-
-
 function getSquareFromCoordinates(coordinates) {
     return BOARDSQUARES[coordinates[0]][coordinates[1]];
 }
@@ -61,9 +58,9 @@ function hasPieceMoved(boardHistory, piece) {
     return 0;
 }
 
-// Returns 0 if invalid move, 1 if valid capturing move, 2 if valid forward
-// movement (non-capturing), 3 if valid en passant, and 4 if pawn COULD capture
-// if there were a piece there (used to determine if a space is in check)
+/* Returns 0 if invalid move, 1 if valid capturing move, 2 if valid forward
+movement (non-capturing), 3 if valid en passant, and 4 if pawn COULD capture
+if there were a piece there (used to determine if a space is in check) */
 function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
 
@@ -74,7 +71,7 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
     let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
     
-    // Verify pawn is moving in the right direction based on its color
+    // Verify pawn is moving in the right direction
     if (pieceMoved[2] === 'W' && verticalDisplacement < 1) return 0;
     if (pieceMoved[2] === 'B' && verticalDisplacement > 1) return 0;
 
@@ -217,7 +214,7 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
     return 1;
 }
 
-// Returns 0 if invalid move, 5 if valid normal/capturing move, and 4 if valid castling move
+// Returns 0 if invalid move, 1 if valid normal/capturing move, and 5 if valid castling move
 function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
 
@@ -272,6 +269,8 @@ function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
 function isSquareInCheck(boardHistory, square, playerColor) {
     let currentBoard = boardHistory.at(-1);
     let enemyPiece = (playerColor === 'W') ? 'B' : 'W';
+    let squareCoords = getCoordinatesFromSquare(square);
+    let squareContent = currentBoard[squareCoords[0]][squareCoords[1]];
 
     for (let i = 0; i < currentBoard.length; i++) {
         for (let j = 0; j < currentBoard[i].length; j++) {
@@ -279,9 +278,14 @@ function isSquareInCheck(boardHistory, square, playerColor) {
             if (currentSquareContent !== 'x' && currentSquareContent[0] === enemyPiece) {
                 switch (currentSquareContent[2]) {
                     case 'P':
-                        if (verifyValidPawnMove(boardHistory, currentSquareContent, square) === 4) {
+                        let p = verifyValidPawnMove(boardHistory, currentSquareContent, square);
+                        if (p === 4) {
                             return 1;
-                        } else continue;
+                        }
+                        else if (p === 1 && squareContent[0] === enemyPiece && squareContent[2] === 'K') {
+                            return 1;
+                        } 
+                        else continue;
                     case 'N':
                         if(verifyValidKnightMove(currentBoard, currentSquareContent, square)) {
                             return 1;
@@ -320,18 +324,19 @@ function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
 
     // Verify destinationSquare is on the board
     if (!('abcdefgh'.includes(destinationSquare[0])) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
-        return 'That\'s not even on the board.';
+        return 0;
     }
 
     // Verify piece is not moving to the square it's already on
     if (pieceCoords === destSqaureCoords) {
-        return 'That\'s the same spot.';
+        return 0;
     }
 
     // Verify piece is not attempting to capture a piece of its own color
+    // Exception made for castling moves; will be checked in verifyValidKingMove
     if (pieceMoved[0] === destinationSquareContent[0]) {
         if (!(pieceMoved[2] === 'K' && destinationSquareContent[2] === 'R')) {
-            return 'Space is already occupied by one of your pieces.';
+            return 0;
         }
     }
 
@@ -353,17 +358,19 @@ function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
 }
 
 
-function updateBoardStandard(oldBoard, pieceMoved, destinationSquare) {
+function updateBoardStandard(boardHistory, pieceMoved, destinationSquare) {
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+
+    let oldBoard = boardHistory.at(-1);
     let newBoard = oldBoard.map(
-        (row, indexOfRowInBoard) => {
+        (row, rowIndex) => {
             return row.map(
-                (square, indexOfSquareInRow) => {
+                (square, squareIndex) => {
                     for (let i = 0; i < row.length; i++) {
-                        let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
                         if (square === pieceMoved) {
                             return 'x';
                         }
-                        else if (destSquareCoords[0] === indexOfRowInBoard && destSquareCoords[1] === indexOfSquareInRow) {
+                        else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
                             return pieceMoved;
                         }
                         else {
@@ -374,7 +381,8 @@ function updateBoardStandard(oldBoard, pieceMoved, destinationSquare) {
             )
         }
     )
-    GAMEHISTORY.push(newBoard)
+
+    boardHistory.push(newBoard);
     return newBoard;
 }
 
@@ -389,25 +397,47 @@ function updateBoardEnPassant() {
 }
 
 
-// Main game loop; runs until checkmate
+function main () {
+    // Initiate variables
+    let boardHistory = [INITIALBOARD];
+    let playerTurn = 'Black';
+    let moveResult = 0;
+    let gameWon = false;
 
-    // Player picks a piece to move
-        // Check if piece has valid moves?
-    
-    // Player picks a square to move selected piece to
-    
-    // Check if move is valid
+    // Main game loop
+    while (!gameWon) {
+        // Switch turns
+        playerTurn === (playerTurn === 'White' ? 'Black' : 'White');
+        console.log(`It's ${playerTurn}'s turn.`)
 
-    // If valid move, check for check(mate)
-        // If check, note for next move
-        // If checkmate, end game
+        // Get user input for piece to move and square to move to
+        let pieceMoved = '';
+        let destinationSquare = '';
+        moveResult = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
+
+        // Check move validity and get new input if invalid move
+        while (!moveResult || moveResult === 4) {
+            console.log('Invalid movement. Please enter a valid move.');
+            pieceMoved = '';
+            destinationSquare = '';
+            moveResult = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
+        }
+
+        switch (moveResult) {
+            case 1:
+            case 2:
+                updateBoardStandard(boardHistory, pieceMoved, destinationSquare);
+                break;
+            case 3:
+                updateBoardEnPassant();
+                break;
+            case 5:
+                updateBoardCastling();
+                break;
+            default: return 'Lol?';
+        }
 
 
-let testBoard1 = updateBoardStandard(GAMEHISTORY.at(-1), 'WQN', 'c3');
-let testBoard2 = updateBoardStandard(GAMEHISTORY.at(-1), 'WDP', 'd3');
-let testBoard3 = updateBoardStandard(GAMEHISTORY.at(-1), 'WQB', 'f4');
-let testBoard4 = updateBoardStandard(GAMEHISTORY.at(-1), 'WQQ', 'b3');
 
-let currentBoard = GAMEHISTORY.at(-1); console.log(currentBoard);
-
-console.log(isSquareInCheck(GAMEHISTORY, 'a3', 'B'))
+    }
+}
