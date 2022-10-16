@@ -271,10 +271,12 @@ function isSquareInCheck(boardHistory, square, playerColor) {
     let enemyPiece = (playerColor === 'W') ? 'B' : 'W';
     let squareCoords = getCoordinatesFromSquare(square);
     let squareContent = currentBoard[squareCoords[0]][squareCoords[1]];
+    let currentSquareContent = '';
 
     for (let i = 0; i < currentBoard.length; i++) {
         for (let j = 0; j < currentBoard[i].length; j++) {
-            let currentSquareContent = currentBoard[i][j];
+            currentSquareContent = currentBoard[i][j];
+
             if (currentSquareContent !== 'x' && currentSquareContent[0] === enemyPiece) {
                 switch (currentSquareContent[2]) {
                     case 'P':
@@ -313,6 +315,27 @@ function isSquareInCheck(boardHistory, square, playerColor) {
     }
     
     return 0;
+}
+
+function isKingInCheckmate(boardHistory, kingColor) {
+    let currentBoard = boardHistory.at(-1);
+    let king = kingColor + 'KK';
+    let currentSquare = ''; let currentSquareContent = '';
+
+    for (let i = 0; i < currentBoard.length; i++) {
+        for (let j = 0; j < currentBoard[i].length; j++) {
+            currentSquare = getSquareFromCoordinates([i, j]);
+            currentSquareContent = currentBoard[i][j];
+
+            if (currentSquareContent === king || verifyValidKingMove(boardHistory, king, currentSquare)) {
+                if (isSquareInCheck(boardHistory, currentSquare, kingColor)) {
+                    continue;
+                } else return 0;
+            }
+        }
+    }
+
+    return 1;
 }
 
 
@@ -373,9 +396,7 @@ function updateBoardStandard(boardHistory, pieceMoved, destinationSquare) {
                         else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
                             return pieceMoved;
                         }
-                        else {
-                            return square;
-                        }
+                        else return square;
                     }
                 }
             )
@@ -424,8 +445,7 @@ function main () {
         }
 
         switch (moveResult) {
-            case 1:
-            case 2:
+            case 1: case 2:
                 updateBoardStandard(boardHistory, pieceMoved, destinationSquare);
                 break;
             case 3:
@@ -436,7 +456,6 @@ function main () {
                 break;
             default: return 'Lol?';
         }
-
 
 
     }
