@@ -330,7 +330,8 @@ function isKingInCheckmate(boardHistory, kingColor) {
             if (currentSquareContent === king || verifyValidKingMove(boardHistory, king, currentSquare)) {
                 if (isSquareInCheck(boardHistory, currentSquare, kingColor)) {
                     continue;
-                } else return 0;
+                } 
+                else return 0;
             }
         }
     }
@@ -351,9 +352,7 @@ function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
     }
 
     // Verify piece is not moving to the square it's already on
-    if (pieceCoords === destSqaureCoords) {
-        return 0;
-    }
+    if (pieceCoords === destSqaureCoords) return 0;
 
     // Verify piece is not attempting to capture a piece of its own color
     // Exception made for castling moves; will be checked in verifyValidKingMove
@@ -418,25 +417,29 @@ function updateBoardEnPassant() {
 }
 
 
-function main () {
+function playGame () {
     // Initiate variables
     let boardHistory = [INITIALBOARD];
-    let playerTurn = 'Black';
+    let playerColor = 'White';
+    let enemyColor = 'Black';
+
+    let pieceMoved = '';
+    let destinationSquare = '';
     let moveResult = 0;
-    let gameWon = false;
 
     // Main game loop
-    while (!gameWon) {
-        // Switch turns
-        playerTurn === (playerTurn === 'White' ? 'Black' : 'White');
-        console.log(`It's ${playerTurn}'s turn.`)
+    while (true) {
+        console.log(`It's ${playerColor}'s turn.`)
 
         // Get user input for piece to move and square to move to
-        let pieceMoved = '';
-        let destinationSquare = '';
+        pieceMoved = '';
+        destinationSquare = '';
+        while (pieceMoved[0] !== playerColor[0]) {
+            console.log('That\'s not your piece.');
+            pieceMoved = '';
+            destinationSquare = '';
+        }
         moveResult = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
-
-        // Check move validity and get new input if invalid move
         while (!moveResult || moveResult === 4) {
             console.log('Invalid movement. Please enter a valid move.');
             pieceMoved = '';
@@ -444,6 +447,7 @@ function main () {
             moveResult = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
         }
 
+        // Update board based on moveResult. En passant and castling require unique functions.
         switch (moveResult) {
             case 1: case 2:
                 updateBoardStandard(boardHistory, pieceMoved, destinationSquare);
@@ -457,6 +461,10 @@ function main () {
             default: return 'Lol?';
         }
 
-
+        // If enemy is in checkmate, end the game. Otherwise, switch turns.
+        if (isKingInCheckmate(boardHistory, enemyColor[0])) break;
+        else [playerColor, enemyColor] = [enemyColor, playerColor];
     }
+
+    console.log(`${playerColor} wins!`);
 }
