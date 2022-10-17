@@ -20,10 +20,10 @@ const INITIALBOARD = [
     ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 ];
 
+
 function getSquareFromCoordinates(coordinates) {
     return BOARDSQUARES[coordinates[0]][coordinates[1]];
 }
-
 
 function getCoordinatesFromSquare(square) {
     for (let i = 0; i < BOARDSQUARES.length; i++) {
@@ -35,7 +35,6 @@ function getCoordinatesFromSquare(square) {
     }
 }
 
-
 function getPieceCoordinates(gameBoard, gamePiece) {
     for (let i = 0; i < gameBoard.length; i++) {
         for (let j = 0; j < gameBoard[i].length; j++) {
@@ -46,6 +45,9 @@ function getPieceCoordinates(gameBoard, gamePiece) {
     }
 }
 
+function getPieceSquare(gameBoard, gamePiece) {
+    return getSquareFromCoordinates(getPieceCoordinates(gameBoard, gamePiece));
+}
 
 function hasPieceMoved(boardHistory, piece) {
     let pieceInitialCoords = getPieceCoordinates(INITIALBOARD, piece);
@@ -57,6 +59,7 @@ function hasPieceMoved(boardHistory, piece) {
 
     return 0;
 }
+
 
 /* Returns 0 if invalid move, 1 if valid capturing move, 2 if valid forward
 movement (non-capturing), 3 if valid en passant, and 4 if pawn COULD capture
@@ -266,6 +269,7 @@ function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
     return 0;
 }
 
+
 function isSquareInCheck(boardHistory, square, playerColor) {
     let currentBoard = boardHistory.at(-1);
     let enemyPiece = (playerColor === 'W') ? 'B' : 'W';
@@ -340,7 +344,7 @@ function isKingInCheckmate(boardHistory, kingColor) {
 }
 
 
-function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
+function verifyValidMovement(boardHistory, playerColor, pieceMoved, destinationSquare) {
     let currentBoard = boardHistory.at(-1);
     let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
     let destSqaureCoords = getCoordinatesFromSquare(destinationSquare);
@@ -350,6 +354,9 @@ function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
     if (!('abcdefgh'.includes(destinationSquare[0])) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
         return 0;
     }
+
+    // Verify piece being moved matches player's color
+    if (playerColor[0] !== pieceMoved[0]) return 0;
 
     // Verify piece is not moving to the square it's already on
     if (pieceCoords === destSqaureCoords) return 0;
@@ -380,7 +387,7 @@ function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
 }
 
 
-function updateBoardStandard(boardHistory, pieceMoved, destinationSquare) {
+function getNewBoard(boardHistory, pieceMoved, destinationSquare) {
     let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
     let oldBoard = boardHistory.at(-1);
@@ -402,7 +409,6 @@ function updateBoardStandard(boardHistory, pieceMoved, destinationSquare) {
         }
     )
 
-    boardHistory.push(newBoard);
     return newBoard;
 }
 
@@ -426,40 +432,42 @@ function playGame () {
     let pieceMoved = '';
     let destinationSquare = '';
     let moveResult = 0;
+    let newBoard = [];
 
     // Main game loop
     while (true) {
-        console.log(`It's ${playerColor}'s turn.`)
+        console.log(`${playerColor}'s turn.`)
 
         // Get user input for piece to move and square to move to
         pieceMoved = '';
         destinationSquare = '';
-        while (pieceMoved[0] !== playerColor[0]) {
-            console.log('That\'s not your piece.');
-            pieceMoved = '';
-            destinationSquare = '';
-        }
-        moveResult = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
-        while (!moveResult || moveResult === 4) {
-            console.log('Invalid movement. Please enter a valid move.');
-            pieceMoved = '';
-            destinationSquare = '';
-            moveResult = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
+        moveResult = verifyValidMovement(boardHistory, playerColor, pieceMoved, destinationSquare);
+        if (!moveResult || moveResult === 4) {
+            console.log('Invalid movement.');
+            continue;
         }
 
-        // Update board based on moveResult. En passant and castling require unique functions.
+        // Get a new board 
         switch (moveResult) {
             case 1: case 2:
-                updateBoardStandard(boardHistory, pieceMoved, destinationSquare);
+                newBoard = getNewBoard(boardHistory, pieceMoved, destinationSquare);
                 break;
             case 3:
-                updateBoardEnPassant();
+                newBoard = updateBoardEnPassant();
                 break;
             case 5:
-                updateBoardCastling();
+                newBoard = updateBoardCastling();
                 break;
-            default: return 'Lol?';
         }
+
+        // If the move would result in the player's king being in check, it is invalid
+        if (isSquareInCheck(getPieceSquare(newBoard, playerColor[0] + 'KK'))) {
+            console.log('Invalid movement');
+            continue;
+        }
+
+        // If the move is valid, push the new board to boardHistory
+        boardHistory.push(newBoard)
 
         // If enemy is in checkmate, end the game. Otherwise, switch turns.
         if (isKingInCheckmate(boardHistory, enemyColor[0])) break;
