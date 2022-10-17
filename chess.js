@@ -387,10 +387,9 @@ function verifyValidMovement(boardHistory, playerColor, pieceMoved, destinationS
 }
 
 
-function getNewBoard(boardHistory, pieceMoved, destinationSquare) {
+function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
     let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
-    let oldBoard = boardHistory.at(-1);
     let newBoard = oldBoard.map(
         (row, rowIndex) => {
             return row.map(
@@ -424,18 +423,19 @@ function updateBoardEnPassant() {
 
 
 function playGame () {
-    // Initiate variables
     let boardHistory = [INITIALBOARD];
+    let currentBoard = [];
+    let newBoard = [];
+
     let playerColor = 'White';
     let enemyColor = 'Black';
-
     let pieceMoved = '';
     let destinationSquare = '';
     let moveResult = 0;
-    let newBoard = [];
-
+    
     // Main game loop
     while (true) {
+        currentBoard = boardHistory.at(-1);
         console.log(`${playerColor}'s turn.`)
 
         // Get user input for piece to move and square to move to
@@ -447,10 +447,10 @@ function playGame () {
             continue;
         }
 
-        // Get a new board 
+        // If the move was valid, get an updated board
         switch (moveResult) {
             case 1: case 2:
-                newBoard = getNewBoard(boardHistory, pieceMoved, destinationSquare);
+                newBoard = getNewBoard(currentBoard, pieceMoved, destinationSquare);
                 break;
             case 3:
                 newBoard = updateBoardEnPassant();
@@ -462,16 +462,18 @@ function playGame () {
 
         // If the move would result in the player's king being in check, it is invalid
         if (isSquareInCheck(getPieceSquare(newBoard, playerColor[0] + 'KK'))) {
-            console.log('Invalid movement');
+            console.log('Invalid movement.');
             continue;
         }
 
-        // If the move is valid, push the new board to boardHistory
+        // If the move is still valid, push the new board to boardHistory
         boardHistory.push(newBoard)
 
-        // If enemy is in checkmate, end the game. Otherwise, switch turns.
+        // If enemy is in checkmate, end the game
         if (isKingInCheckmate(boardHistory, enemyColor[0])) break;
-        else [playerColor, enemyColor] = [enemyColor, playerColor];
+
+        // Otherwise, switch turns and continue the game
+        [playerColor, enemyColor] = [enemyColor, playerColor];
     }
 
     console.log(`${playerColor} wins!`);
