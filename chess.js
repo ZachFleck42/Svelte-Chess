@@ -321,9 +321,9 @@ function isSquareInCheck(boardHistory, square, playerColor) {
     return 0;
 }
 
-function isKingInCheckmate(boardHistory, kingColor) {
+function isKingInCheckmate(boardHistory, playerColor) {
+    let king = playerColor[0] + 'KK';
     let currentBoard = boardHistory.at(-1);
-    let king = kingColor + 'KK';
     let currentSquare = ''; let currentSquareContent = '';
 
     for (let i = 0; i < currentBoard.length; i++) {
@@ -332,9 +332,9 @@ function isKingInCheckmate(boardHistory, kingColor) {
             currentSquareContent = currentBoard[i][j];
 
             if (currentSquareContent === king || verifyValidKingMove(boardHistory, king, currentSquare)) {
-                if (isSquareInCheck(boardHistory, currentSquare, kingColor)) {
+                if (isSquareInCheck(boardHistory, currentSquare, playerColor)) {
                     continue;
-                } 
+                }
                 else return 0;
             }
         }
@@ -404,21 +404,67 @@ function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
                         else return square;
                     }
                 }
-            )
+            );
         }
-    )
+    );
 
     return newBoard;
 }
 
 
-function updateBoardCastling() {
+function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
+    let newBoard = oldBoard.map(
+        (row, rowIndex) => {
+            return row.map(
+                (square, squareIndex) => {
+                    for (let i = 0; i < row.length; i++) {
+                        if (square === pieceMoved) {
+                            return 'x';
+                        }
+                        else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
+                            return pieceMoved;
+                        }
+                        else return square;
+                    }
+                }
+            );
+        }
+    );
 
+    return newBoard;
 }
 
 
-function updateBoardEnPassant() {
+function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
+    let pieceCoords = getPieceCoordinates(oldBoard, pieceMoved);
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+    let destSquareContent = oldBoard[destSquareCoords[0]][destSquareCoords[1]];
 
+    let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
+    let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
+
+    let newBoard = oldBoard.map(
+        (row, rowIndex) => {
+            return row.map(
+                (square, squareIndex) => {
+                    for (let i = 0; i < row.length; i++) {
+                        if (square === pieceMoved) {
+                            return 'x';
+                        }
+                        else if (rowIndex === (destSquareCoords[0] - verticalDisplacement) && squareIndex === destSquareCoords[1]) {
+                            return 'x';
+                        }
+                        else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
+                            return pieceMoved;
+                        }
+                        else return square;
+                    }
+                }
+            );
+        }
+    );
+
+    return newBoard;
 }
 
 
@@ -453,10 +499,10 @@ function playGame () {
                 newBoard = getNewBoard(currentBoard, pieceMoved, destinationSquare);
                 break;
             case 3:
-                newBoard = updateBoardEnPassant();
+                newBoard = getNewBoardEnPassant(currentBoard, pieceMoved, destinationSquare);
                 break;
             case 5:
-                newBoard = updateBoardCastling();
+                newBoard = getNewBoardCastle(currentBoard, pieceMoved, destinationSquare);
                 break;
         }
 
@@ -470,7 +516,7 @@ function playGame () {
         boardHistory.push(newBoard)
 
         // If enemy is in checkmate, end the game
-        if (isKingInCheckmate(boardHistory, enemyColor[0])) break;
+        if (isKingInCheckmate(boardHistory, enemyColor)) break;
 
         // Otherwise, switch turns and continue the game
         [playerColor, enemyColor] = [enemyColor, playerColor];
