@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "pnpm exec prettier --write --plugin-search-dir=. ./src/**",
-    "posttest": "pnpm run lint"
+    "posttest": "pnpm run lint",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.1.0",
@@ -21,6 +22,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-xo": "^0.42.0",
     "eslint-config-xo-typescript": "^0.53.0",
-    "eslint-plugin-unicorn": "^44.0.2"
+    "eslint-plugin-unicorn": "^44.0.2",
+    "husky": "^8.0.0"
   }
 }
