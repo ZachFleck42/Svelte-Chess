@@ -413,6 +413,8 @@ function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
 
 
 function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+
     let newBoard = oldBoard.map(
         (row, rowIndex) => {
             return row.map(
@@ -437,7 +439,7 @@ function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
 
 function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
     let pieceCoords = getPieceCoordinates(oldBoard, pieceMoved);
-    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);ß
+    let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
     let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
 
     let newBoard = oldBoard.map(
