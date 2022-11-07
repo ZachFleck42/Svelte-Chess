@@ -3,7 +3,6 @@ module.exports = {
 		require('./node_modules/prettier-plugin-tailwindcss'),
 		require('./node_modules/@trivago/prettier-plugin-sort-imports'),
 	],
-	tailwindConfig: './tailwind.config.cjs',
 	arrowParens: 'always',
 	bracketSameLine: true,
 	bracketSpacing: false,
