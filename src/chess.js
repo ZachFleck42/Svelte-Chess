@@ -7,7 +7,7 @@ const BOARDSQUARES = [
 	['a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3'],
 	['a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2'],
 	['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
-];
+];    
 
 const INITIALBOARD = [
 	['BQR', 'BQN', 'BQB', 'BQQ', 'BKK', 'BKB', 'BKN', 'BKR'],
@@ -18,7 +18,7 @@ const INITIALBOARD = [
 	['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
 	['WAP', 'WBP', 'WCP', 'WDP', 'WEP', 'WFP', 'WGP', 'WHP'],
 	['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
-];
+];    
 
 function getSquareFromCoordinates(coordinates) {
 	return BOARDSQUARES[coordinates[0]][coordinates[1]];
