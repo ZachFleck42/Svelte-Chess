@@ -518,3 +518,5 @@ function playGame() {
 
 	console.log(`${playerColor} wins!`);
 }
+
+playGame();
