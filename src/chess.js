@@ -460,7 +460,6 @@ function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 	return newBoard;
 }
 
-// eslint-disable-next-line no-unused-vars
 function playGame() {
 	let boardHistory = [INITIALBOARD];
 	let currentBoard = [];
