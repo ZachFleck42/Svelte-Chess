@@ -419,14 +419,23 @@ function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
 
 function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+	let kingStartCoords = getPieceCoordinates(oldBoard, pieceMoved);
+	let horizontalDisplacement = kingStartCoords[1] - destSquareCoords[1];
+	
+	let direction = horizontalDisplacement < 0 ? 'K' : 'Q'
+	let rook = pieceMoved[0] + direction + 'R';
+	let rookNewPos = direction === 'K' ? -1 : 1;
+
 
 	let newBoard = oldBoard.map((row, rowIndex) => {
 		return row.map((square, squareIndex) => {
 			for (let i = 0; i < row.length; i++) {
-				if (square === pieceMoved) {
+				if (square === pieceMoved || oldBoard[rowIndex][squareIndex] === rook) {
 					return 'x';
 				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
 					return pieceMoved;
+				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] + rookNewPos === squareIndex) {
+					return rook
 				} else return square;
 			}
 		});
@@ -519,4 +528,4 @@ function playGame() {
 	console.log(`${playerColor} wins!`);
 }
 
-playGame();
+console.log(getNewBoardCastle(INITIALBOARD, 'WKK', 'c1'));
