@@ -86,10 +86,8 @@ function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
 			// Check for en passant
 			if (destSquareContent === 'x') {
 				// This is checking to see if a pawn double-moved across the destinationSquare last turn.
-				let enPasCheck1 =
-					currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]];
-				let enPasCheck2 =
-					boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]];
+				let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]];
+				let enPasCheck2 = boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]];
 				if (enPasCheck1 === enPasCheck2 && enPasCheck1[2] === 'P') {
 					return 3;
 				} else return 4;
@@ -144,9 +142,7 @@ function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
 
 	// Look for any pieces in the bishop's path
 	for (let i = 1; i < Math.abs(verticalDisplacement); i++) {
-		if (
-			currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection] !== 'x'
-		) {
+		if (currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection] !== 'x') {
 			return 0;
 		}
 	}
@@ -174,14 +170,8 @@ function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
 	else if (horizontalDisplacement > 0) horizDirection = -1;
 
 	// Look for any pieces in the rook's path
-	for (
-		let i = 1;
-		i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement));
-		i++
-	) {
-		if (
-			currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection] !== 'x'
-		) {
+	for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
+		if (currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection] !== 'x') {
 			return 0;
 		}
 	}
@@ -214,13 +204,8 @@ function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
 
 	// Look for any pieces in the queen's path
 	let squareContent = '';
-	for (
-		let i = 1;
-		i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement));
-		i++
-	) {
-		squareContent =
-			currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection];
+	for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
+		squareContent = currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection];
 		if (squareContent !== 'x') return 0;
 	}
 
@@ -360,11 +345,7 @@ function verifyValidMovement(boardHistory, playerColor, pieceMoved, destinationS
 	let destinationSquareContent = currentBoard[destSqaureCoords[0]][destSqaureCoords[2]];
 
 	// Verify destinationSquare is on the board
-	if (
-		!'abcdefgh'.includes(destinationSquare[0]) ||
-		destinationSquare[1] < 1 ||
-		destinationSquare[1] > 8
-	) {
+	if (!'abcdefgh'.includes(destinationSquare[0]) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
 		return 0;
 	}
 
@@ -421,11 +402,10 @@ function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 	let kingStartCoords = getPieceCoordinates(oldBoard, pieceMoved);
 	let horizontalDisplacement = kingStartCoords[1] - destSquareCoords[1];
-	
-	let direction = horizontalDisplacement < 0 ? 'K' : 'Q'
+
+	let direction = horizontalDisplacement < 0 ? 'K' : 'Q';
 	let rook = pieceMoved[0] + direction + 'R';
 	let rookNewPos = direction === 'K' ? -1 : 1;
-
 
 	let newBoard = oldBoard.map((row, rowIndex) => {
 		return row.map((square, squareIndex) => {
@@ -435,7 +415,7 @@ function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
 				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
 					return pieceMoved;
 				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] + rookNewPos === squareIndex) {
-					return rook
+					return rook;
 				} else return square;
 			}
 		});
@@ -454,10 +434,7 @@ function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 			for (let i = 0; i < row.length; i++) {
 				if (square === pieceMoved) {
 					return 'x';
-				} else if (
-					rowIndex === destSquareCoords[0] - verticalDisplacement &&
-					squareIndex === destSquareCoords[1]
-				) {
+				} else if (rowIndex === destSquareCoords[0] - verticalDisplacement && squareIndex === destSquareCoords[1]) {
 					return 'x';
 				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
 					return pieceMoved;

@@ -1,11 +1,10 @@
 <script>
-    import Game from '/src/lib/components/Game.svelte';
+	import Game from '/src/lib/components/Game.svelte';
 </script>
 
 <div>
-    <Game />
+	<Game />
 </div>
 
 <style>
-
 </style>
