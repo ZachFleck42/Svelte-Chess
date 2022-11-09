@@ -9,7 +9,7 @@
 </script>
 
 <div>
-    <button on:click={() => dispatch('click', position)}>
+    <button on:click={() => dispatch('click', [position, content])}>
         {#if content !== 'x'}
             <img src="src/assets/{src}.svg" alt="{src}">
         {:else if content === 'x'}

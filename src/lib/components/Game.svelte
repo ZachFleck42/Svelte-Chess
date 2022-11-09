@@ -23,24 +23,60 @@
         ['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
     ];
 
-    function handleClick(event) {
-        let row = event.detail[0];
-        let column = event.detail[1];
-        let boardPosition = BOARDSQUARES[row][column];
+    let boardHistory = [INITIALBOARD];
 
-        console.log(boardPosition);
+
+    function getCoordinatesFromSquare(square) {
+        for (let i = 0; i < BOARDSQUARES.length; i++) {
+            for (let j = 0; j < BOARDSQUARES[i].length; j++) {
+                if (BOARDSQUARES[i][j] === square) {
+                    return [i, j];
+			    }
+		    }
+	    }
     }
+
+
+    function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
+        let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+
+        let newBoard = oldBoard.map((row, rowIndex) => {
+            return row.map((square, squareIndex) => {
+                for (let i = 0; i < row.length; i++) {
+                    if (square === pieceMoved) {
+                        return 'x';
+                    } else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
+                        return pieceMoved;
+                    } else return square;
+                }
+            });
+        });
+
+        return newBoard;
+    }
+
+    function addBoardToHistory(newBoard) {
+        boardHistory = [...boardHistory, newBoard];
+    }
+
+    const handleClick = (event) => {
+        let squareCoords = event.detail[0];
+        let square = BOARDSQUARES[squareCoords[0]][squareCoords[1]];
+        let squareContent = event.detail[1];
+        
+        console.log(square, squareContent);
+    }
+
 </script>
 
 <div class="game">
-    <Board board={INITIALBOARD} on:click={handleClick}/>
+    <Board board={boardHistory[boardHistory.length - 1]} on:click={handleClick}/>
 </div>
 
 <style>
     .game {
         display: flex;
         justify-content: center;
-        align-content: center;
         margin: 40px auto;
     }
 </style>
