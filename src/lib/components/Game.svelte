@@ -78,7 +78,6 @@
 
 		// Verify pawn is moving in the right direction
 		if (pieceMoved[0] === 'W' && verticalDisplacement < 1) return 0;
-
 		if (pieceMoved[0] === 'B' && verticalDisplacement > -1) return 0;
 
 		if (Math.abs(verticalDisplacement) === 1) {
@@ -273,8 +272,6 @@
 	function isSquareInCheck(boardHistory, square, playerColor) {
 		let currentBoard = boardHistory[boardHistory.length - 1];
 		let enemyPiece = playerColor[0] === 'W' ? 'B' : 'W';
-		let squareCoords = getCoordinatesFromSquare(square);
-		let squareContent = currentBoard[squareCoords[0]][squareCoords[1]];
 		let currentSquareContent = '';
 
 		for (let i = 0; i < currentBoard.length; i++) {
@@ -285,9 +282,7 @@
 					switch (currentSquareContent[2]) {
 						case 'P': {
 							let p = verifyValidPawnMove(boardHistory, currentSquareContent, square);
-							if (p === 4) {
-								return 1;
-							} else if (p === 1 && squareContent[0] === enemyPiece && squareContent[2] === 'K') {
+							if (p === 4 || p === 1) {
 								return 1;
 							} else continue;
 						}
@@ -498,7 +493,7 @@
                     break;
             }
 
-            if (isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor)) {
+            if (isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor[0])) {
                 invalidMove = true;
                 temp = 0;
                 break;
