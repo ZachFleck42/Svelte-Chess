@@ -6,18 +6,16 @@
 
 <div class="board">
     {#each board as row, i}
-        <div class="row">
-            {#each row as content, j}
-                <Square {content} position={[i, j]} on:click />
-            {/each}
-        </div>
+        {#each row as content, j}
+            <Square {content} position={[i, j]} on:click />
+        {/each}
     {/each}
 </div>
 
 <style>
-    .row:after {
-        clear: both;
-        content: "";
-        display: table;
+    .board {
+        display: grid;
+        grid-template-columns: 72px 72px 72px 72px 72px 72px 72px 72px;
+        grid-template-rows: 72px 72px 72px 72px 72px 72px 72px 72px;
     }
 </style>

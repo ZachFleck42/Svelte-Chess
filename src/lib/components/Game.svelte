@@ -27,15 +27,20 @@
         let row = event.detail[0];
         let column = event.detail[1];
         let boardPosition = BOARDSQUARES[row][column];
-        
+
         console.log(boardPosition);
     }
 </script>
 
-<div>
+<div class="game">
     <Board board={INITIALBOARD} on:click={handleClick}/>
 </div>
 
 <style>
-
+    .game {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        margin: 40px auto;
+    }
 </style>

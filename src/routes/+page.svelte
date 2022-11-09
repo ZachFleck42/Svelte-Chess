@@ -3,7 +3,6 @@
 </script>
 
 <div>
-    <p>Hello world</p>
     <Game />
 </div>
 
