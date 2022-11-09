@@ -1,18 +1,15 @@
 <script>
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+
     export let content;
     export let position;
 
-    let src = content[0] + content[2];
-    let row = position[0];
-    let column = position[1];
-
-    function handleClick () {
-        console.log(`${row}, ${column}`);
-    }
+    const src = content[0] + content[2];
 </script>
 
 <div>
-    <button class="square" on:click={handleClick}>
+    <button on:click={() => dispatch('click', position)}>
         {#if content !== 'x'}
             <img src="src/assets/{src}.svg" alt="{src}">
         {:else if content === 'x'}
@@ -24,7 +21,7 @@
 </div>
 
 <style>
-    .square {
+    button {
         background: #fff;
         border: 1px solid #999;
         float: left;

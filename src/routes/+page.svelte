@@ -1,10 +1,10 @@
 <script>
-    import Board from '/src/lib/components/Board.svelte';
+    import Game from '/src/lib/components/Game.svelte';
 </script>
 
 <div>
     <p>Hello world</p>
-    <Board />
+    <Game />
 </div>
 
 <style>
