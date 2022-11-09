@@ -77,8 +77,9 @@
 		let horizontalDisplacement = pieceCoords[1] - destSquareCoords[1];
 
 		// Verify pawn is moving in the right direction
-		if (pieceMoved[2] === 'W' && verticalDisplacement < 1) return 0;
-		if (pieceMoved[2] === 'B' && verticalDisplacement > 1) return 0;
+		if (pieceMoved[0] === 'W' && verticalDisplacement < 1) return 0;
+
+		if (pieceMoved[0] === 'B' && verticalDisplacement > -1) return 0;
 
 		if (Math.abs(verticalDisplacement) === 1) {
 			//  Check for valid one-space move
@@ -252,7 +253,7 @@
 							return 0;
 						}
 						// Castling is not possible if the king will move through or into check
-						if (i <= 2 && (boardHistory, square, pieceMoved[0])) {
+						if (i <= 2 && isSquareInCheck(boardHistory, square, pieceMoved[0])) {
 							return 0;
 						}
 						// If the rook is present and has not moved, castling is possible
