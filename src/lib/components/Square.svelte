@@ -1,14 +1,26 @@
 <script>
     export let content;
+    export let position;
+
     let src = content[0] + content[2];
+    let row = position[0];
+    let column = position[1];
+
+    function handleClick () {
+        console.log(`${row}, ${column}`);
+    }
 </script>
 
 <div>
-    {#if content !== 'x'}
-        <button class="square"><img src="src/assets/{src}.svg" alt="{src}"></button>
-    {:else if content === 'x'}
-        <button class="square" />
-    {/if}
+    <button class="square" on:click={handleClick}>
+        {#if content !== 'x'}
+            <img src="src/assets/{src}.svg" alt="{src}">
+        {:else if content === 'x'}
+            <p></p>
+        {:else}
+            <p>?</p>
+        {/if}
+    </button>
 </div>
 
 <style>
