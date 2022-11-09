@@ -4,7 +4,11 @@
 </script>
 
 <div>
-    <button class="square"><img src="src/assets/{src}.svg" alt="{src}"></button>
+    {#if content !== 'x'}
+        <button class="square"><img src="src/assets/{src}.svg" alt="{src}"></button>
+    {:else if content === 'x'}
+        <button class="square" />
+    {/if}
 </div>
 
 <style>
