@@ -23,7 +23,6 @@
 		['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 	];
 
-	let boardHistory = [INITIALBOARD];
 
 	function getSquareFromCoordinates(coordinates) {
 		return BOARDSQUARES[coordinates[0]][coordinates[1]];
@@ -344,10 +343,10 @@
 	}
 
 	function verifyValidMovement(boardHistory, playerColor, pieceMoved, destinationSquare) {
-		let currentBoard = boardHistory.at(-1);
+		let currentBoard = boardHistory[boardHistory.length - 1];
 		let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-		let destSqaureCoords = getCoordinatesFromSquare(destinationSquare);
-		let destinationSquareContent = currentBoard[destSqaureCoords[0]][destSqaureCoords[2]];
+		let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+		let destinationSquareContent = currentBoard[destSquareCoords[0]][destSquareCoords[1]];
 
 		// Verify destinationSquare is on the board
 		if (!'abcdefgh'.includes(destinationSquare[0]) || destinationSquare[1] < 1 || destinationSquare[1] > 8) {
@@ -358,7 +357,7 @@
 		if (playerColor[0] !== pieceMoved[0]) return 0;
 
 		// Verify piece is not moving to the square it's already on
-		if (pieceCoords === destSqaureCoords) return 0;
+		if (pieceCoords === destSquareCoords) return 0;
 
 		// Verify piece is not attempting to capture a piece of its own color
 		// Exception made for castling moves; will be checked in verifyValidKingMove
@@ -451,23 +450,57 @@
 		return newBoard;
 	}
 
-	function addBoardToHistory(newBoard) {
-		boardHistory = [...boardHistory, newBoard];
-	}
+	let boardHistory = [INITIALBOARD];
+    let currentBoard = [];
+    let newBoard = [];
 
-	const handleClick = (event) => {
-		let squareCoords = event.detail[0];
-		let squareContent = event.detail[1];
+    let playerColor = 'White';
+    let enemyColor = 'Black';
+
+    let selectedPiece = '';
+    let selectedSquare = '';
+    let moveResult = 0;
+    let invalidMove = false;
+
+    let temp = 0;
+    
+	function updateGame (userInput) {
+		let squareCoords = userInput.detail[0];
+		let squareContent = userInput.detail[1];
 		let square = BOARDSQUARES[squareCoords[0]][squareCoords[1]];
 
-		console.log(square, squareContent);
-	};
+        currentBoard = boardHistory[boardHistory.length - 1];
+
+        if (temp === 0) {
+            selectedPiece = squareContent;
+            temp += 1;
+        }
+        else if (temp === 1) {
+            selectedSquare = square;
+            moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
+
+            temp = 0;
+        }
+
+    }
+
 </script>
 
 <div>
 	<div class="game-board">
-		<Board board={boardHistory[boardHistory.length - 1]} on:click={handleClick} />
+		<Board board={boardHistory[boardHistory.length - 1]} on:click={updateGame} />
 	</div>
+    {#if invalidMove}
+        <p style="color: red">Invalid move</p>
+    {/if}
+
+    <p>It's {playerColor}'s turn.</p>
+
+    {#if temp === 0}
+        <p>{playerColor}, please select a piece.</p>
+    {:else if temp === 1}
+        <p>{playerColor} selected {selectedPiece}. Now pick a square to move it too.</p>
+    {/if}
 </div>
 
 <style>
