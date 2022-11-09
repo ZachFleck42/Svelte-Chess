@@ -271,7 +271,7 @@
 
 	function isSquareInCheck(boardHistory, square, playerColor) {
 		let currentBoard = boardHistory[boardHistory.length - 1];
-		let enemyPiece = playerColor === 'W' ? 'B' : 'W';
+		let enemyPiece = playerColor[0] === 'W' ? 'B' : 'W';
 		let squareCoords = getCoordinatesFromSquare(square);
 		let squareContent = currentBoard[squareCoords[0]][squareCoords[1]];
 		let currentSquareContent = '';
@@ -498,18 +498,19 @@
             }
 
             if (isSquareInCheck(boardHistory, getPieceSquare(currentBoard, playerColor[0] + 'KK'), playerColor)) {
-                console.log("????");
+                invalidMove = true;
+                temp = 0;
+                break;
 		    }
+
+            if (invalidMove) invalidMove = false;
 
             boardHistory = [...boardHistory, newBoard];
             [playerColor, enemyColor] = [enemyColor, playerColor];
-            if (invalidMove) !invalidMove;
             temp = 0;
 
         } while (false);
-
     }
-
 </script>
 
 <div>
