@@ -4,18 +4,14 @@
 
     export let content;
     export let position;
-
-    const src = content[0] + content[2];
 </script>
 
 <div>
     <button on:click={() => dispatch('click', [position, content])}>
-        {#if content !== 'x'}
-            <img src="src/assets/{src}.svg" alt="{src}">
-        {:else if content === 'x'}
+        {#if content === 'x'}
             <p></p>
         {:else}
-            <p>?</p>
+            <img src="src/assets/{content[0] + content[2]}.svg" alt="no">
         {/if}
     </button>
 </div>

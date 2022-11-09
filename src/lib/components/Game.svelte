@@ -59,22 +59,42 @@
         boardHistory = [...boardHistory, newBoard];
     }
 
+    let temp = true;
+    let selectedPiece = '';
+    let destinationSquare = '';
+
     const handleClick = (event) => {
         let squareCoords = event.detail[0];
-        let square = BOARDSQUARES[squareCoords[0]][squareCoords[1]];
         let squareContent = event.detail[1];
-        
-        console.log(square, squareContent);
+        let square = BOARDSQUARES[squareCoords[0]][squareCoords[1]];
+
+        if (temp) selectedPiece = squareContent;
+        else destinationSquare = square;
+        temp = !temp;
+
+        if (selectedPiece !== '' && destinationSquare !== '') {
+            let newBoard = getNewBoard(boardHistory[boardHistory.length - 1], selectedPiece, destinationSquare);
+            addBoardToHistory(newBoard);
+
+            selectedPiece = '';
+            destinationSquare = '';
+        }
     }
 
 </script>
 
-<div class="game">
-    <Board board={boardHistory[boardHistory.length - 1]} on:click={handleClick}/>
+<div>
+    <div class="game-board">
+        <Board board={boardHistory[boardHistory.length - 1]} on:click={handleClick}/>
+    </div>
+
+    <p>Selected piece: {selectedPiece}</p>
+    <p>Destination square: {destinationSquare}</p>
+
 </div>
 
 <style>
-    .game {
+    .game-board {
         display: flex;
         justify-content: center;
         margin: 40px auto;
