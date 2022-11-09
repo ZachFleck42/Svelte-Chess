@@ -11,7 +11,7 @@
 		{#if content === 'x'}
 			<p />
 		{:else}
-			<img src="src/assets/{content[0] + content[2]}.svg" alt="no" />
+			<img src="src/assets/{content[0] + content[2]}.svg" alt="{content[0] + content[2]}" />
 		{/if}
 	</button>
 </div>

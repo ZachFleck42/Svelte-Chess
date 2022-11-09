@@ -439,7 +439,7 @@
 				for (let i = 0; i < row.length; i++) {
 					if (square === pieceMoved) {
 						return 'x';
-					} else if (rowIndex === destSquareCoords[0] - verticalDisplacement && squareIndex === destSquareCoords[1]) {
+					} else if (rowIndex === destSquareCoords[0] + verticalDisplacement && squareIndex === destSquareCoords[1]) {
 						return 'x';
 					} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
 						return pieceMoved;
@@ -498,7 +498,7 @@
                     break;
             }
 
-            if (isSquareInCheck(boardHistory, getPieceSquare(currentBoard, playerColor[0] + 'KK'), playerColor)) {
+            if (isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor)) {
                 invalidMove = true;
                 temp = 0;
                 break;
