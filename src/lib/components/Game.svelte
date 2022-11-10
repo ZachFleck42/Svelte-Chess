@@ -463,7 +463,7 @@
 	let invalidSelection = false;
     let invalidMove = false;
 
-    let temp = 0;
+    let turnPart = 0;
     
 	function updateGame (userInput) {
 		let squareCoords = userInput.detail[0];
@@ -472,7 +472,7 @@
 
         currentBoard = boardHistory[boardHistory.length - 1];
 
-        if (temp === 0) do {
+        if (turnPart === 0) do {
 			if (invalidSelection) invalidSelection = false;
 			if (invalidMove) invalidMove = false;
 
@@ -482,15 +482,15 @@
 				break;
 			}
 			
-            temp += 1;
+            turnPart += 1;
         } while (false)
-        else if (temp === 1) do {
+        else if (turnPart === 1) do {
             selectedSquare = square;
             moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
 
             if (!moveResult || moveResult === 4) {
 			    invalidMove = true;
-                temp = 0;
+                turnPart = 0;
 			    break;
 		    }
 
@@ -509,14 +509,14 @@
 
             if (isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor[0])) {
                 invalidMove = true;
-                temp = 0;
+                turnPart = 0;
                 break;
 		    }
 
 			// Push new board to history and reset variables for next turn
             [playerColor, enemyColor] = [enemyColor, playerColor];
             boardHistory = [...boardHistory, newBoard];
-            temp = 0;
+            turnPart = 0;
 
         } while (false);
     }
@@ -526,19 +526,22 @@
 	<div class="game-board">
 		<Board board={boardHistory[boardHistory.length - 1]} on:click={updateGame} />
 	</div>
-    {#if invalidMove}
-        <p style="color: red">Invalid move</p>
-	{:else if invalidSelection}
-		<p style="color: red">Invalid piece selection</p>
-    {/if}
+	<div class="game-info">
+		<!-- Error readouts -->
+		{#if invalidMove}
+			<p style="color: red">Invalid move</p>
+		{:else if invalidSelection}
+			<p style="color: red">Invalid selection</p>
+		{/if}
 
-    <p>It's {playerColor}'s turn.</p>
+		<p>It's {playerColor}'s turn.</p>
 
-    {#if temp === 0}
-        <p>{playerColor}, please select a piece.</p>
-    {:else if temp === 1}
-        <p>{playerColor} selected {selectedPiece}. Now pick a square to move it too.</p>
-    {/if}
+		{#if turnPart === 0}
+			<p>{playerColor}, please select a piece.</p>
+		{:else if turnPart === 1}
+			<p>{playerColor} selected {selectedPiece}. Now pick a square to move it too.</p>
+		{/if}
+	</div>
 </div>
 
 <style>

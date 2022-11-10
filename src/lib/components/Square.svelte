@@ -4,10 +4,24 @@
 
 	export let content;
 	export let position;
+
+	let squareColor = 'darkgrey';
+	if (position[0] % 2 === 0) {
+		if (position[1] % 2 === 0) {
+			squareColor = 'white';
+		}
+	}
+	else {
+		if (position[1] % 2 !== 0) {
+			squareColor = 'white';
+		}
+	}
 </script>
 
 <div>
-	<button on:click={() => dispatch('click', [position, content])}>
+	<button 
+		on:click={() => dispatch('click', [position, content])}
+		style="background: {squareColor}">
 		{#if content === 'x'}
 			<p />
 		{:else}
@@ -25,7 +39,7 @@
 		margin-top: -1px;
 		padding: 0;
 
-		background: #fff;
+		/* background: #fff; */
 		border: 1px solid #999;
 	}
 
