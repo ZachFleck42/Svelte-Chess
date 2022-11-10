@@ -557,7 +557,7 @@
 		{#if turnPart === 0}
 			<p>{playerColor}, please select a piece.</p>
 		{:else if turnPart === 1}
-			<p>{playerColor} selected {selectedPiece}. Now pick a square to move it too.</p>
+			<p>{playerColor} selected {selectedPiece}. Now pick a square to move it to.</p>
 		{/if}
 	</div>
 </div>
