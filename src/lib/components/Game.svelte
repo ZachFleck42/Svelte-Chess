@@ -52,6 +52,11 @@
 		return getSquareFromCoordinates(getPieceCoordinates(gameBoard, gamePiece));
 	}
 
+	function getSquareContent(currentBoard, square) {
+		let squareCoords = getCoordinatesFromSquare(square);
+		return currentBoard[squareCoords[0]][squareCoords[1]];
+	}
+
 	function hasPieceMoved(boardHistory, piece) {
 		let pieceInitialCoords = getPieceCoordinates(INITIALBOARD, piece);
 		for (let i = 1; i < boardHistory.length; i++) {
@@ -450,7 +455,6 @@
 	}
 
 	let boardHistory = [INITIALBOARD];
-    let currentBoard = [];
     let newBoard = [];
 
     let playerColor = 'White';
@@ -470,8 +474,9 @@
 		let squareContent = userInput.detail[1];
 		let square = BOARDSQUARES[squareCoords[0]][squareCoords[1]];
 
-        currentBoard = boardHistory[boardHistory.length - 1];
+        let currentBoard = boardHistory[boardHistory.length - 1];
 
+		// Piece selection
         if (turnPart === 0) do {
 			if (invalidSelection) invalidSelection = false;
 			if (invalidMove) invalidMove = false;
@@ -484,16 +489,25 @@
 			
             turnPart += 1;
         } while (false)
+		// Destination square selection
         else if (turnPart === 1) do {
             selectedSquare = square;
-            moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
 
+			// Allow user to selecte a different piece (of their own color)
+			if (squareContent[0] === playerColor[0]) {
+				selectedPiece = squareContent;
+				break;
+			}
+
+            moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
+			// Check for invalid piece movement
             if (!moveResult || moveResult === 4) {
 			    invalidMove = true;
                 turnPart = 0;
 			    break;
 		    }
 
+			// If valid movement, get an updated board
             switch (moveResult) {
                 case 1:
                 case 2:
@@ -507,6 +521,7 @@
                     break;
             }
 
+			// Check if the move would leave player's king in check; break if so.
             if (isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor[0])) {
                 invalidMove = true;
                 turnPart = 0;
