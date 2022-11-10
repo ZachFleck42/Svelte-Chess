@@ -91,7 +91,10 @@
 				if (destSquareContent === 'x') {
 					// This is checking to see if a pawn double-moved across the destinationSquare last turn.
 					let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]];
-					let enPasCheck2 = boardHistory.at(-2)[destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]];
+					let enPasCheck2 = '';
+					if (boardHistory.length > 2) {
+						enPasCheck2 = boardHistory[boardHistory.length - 2][destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]];
+					}
 					if (enPasCheck1 === enPasCheck2 && enPasCheck1[2] === 'P') {
 						return 3;
 					} else return 4;
@@ -456,6 +459,8 @@
     let selectedPiece = '';
     let selectedSquare = '';
     let moveResult = 0;
+
+	let invalidSelection = false;
     let invalidMove = false;
 
     let temp = 0;
@@ -467,10 +472,18 @@
 
         currentBoard = boardHistory[boardHistory.length - 1];
 
-        if (temp === 0) {
+        if (temp === 0) do {
+			if (invalidSelection) invalidSelection = false;
+			if (invalidMove) invalidMove = false;
+
             selectedPiece = squareContent;
+			if (selectedPiece[0] !== playerColor[0]) {
+				invalidSelection = true;
+				break;
+			}
+			
             temp += 1;
-        }
+        } while (false)
         else if (temp === 1) do {
             selectedSquare = square;
             moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
@@ -480,6 +493,7 @@
                 temp = 0;
 			    break;
 		    }
+
             switch (moveResult) {
                 case 1:
                 case 2:
@@ -499,10 +513,9 @@
                 break;
 		    }
 
-            if (invalidMove) invalidMove = false;
-
-            boardHistory = [...boardHistory, newBoard];
+			// Push new board to history and reset variables for next turn
             [playerColor, enemyColor] = [enemyColor, playerColor];
+            boardHistory = [...boardHistory, newBoard];
             temp = 0;
 
         } while (false);
@@ -515,6 +528,8 @@
 	</div>
     {#if invalidMove}
         <p style="color: red">Invalid move</p>
+	{:else if invalidSelection}
+		<p style="color: red">Invalid piece selection</p>
     {/if}
 
     <p>It's {playerColor}'s turn.</p>
