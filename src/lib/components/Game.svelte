@@ -23,7 +23,6 @@
 		['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR']
 	];
 
-
 	function getSquareFromCoordinates(coordinates) {
 		return BOARDSQUARES[coordinates[0]][coordinates[1]];
 	}
@@ -98,7 +97,8 @@
 					let enPasCheck1 = currentBoard[destSquareCoords[0] + verticalDisplacement][destSquareCoords[1]];
 					let enPasCheck2 = '';
 					if (boardHistory.length > 2) {
-						enPasCheck2 = boardHistory[boardHistory.length - 2][destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]];
+						enPasCheck2 =
+							boardHistory[boardHistory.length - 2][destSquareCoords[0] - verticalDisplacement][destSquareCoords[1]];
 					}
 					if (enPasCheck1 === enPasCheck2 && enPasCheck1[2] === 'P') {
 						return 3;
@@ -455,86 +455,89 @@
 	}
 
 	let boardHistory = [INITIALBOARD];
-    let newBoard = [];
+	let newBoard = [];
 
-    let playerColor = 'White';
-    let enemyColor = 'Black';
+	let playerColor = 'White';
+	let enemyColor = 'Black';
 
-    let selectedPiece = '';
-    let selectedSquare = '';
-    let moveResult = 0;
+	let selectedPiece = '';
+	let selectedSquare = '';
+	let moveResult = 0;
 
 	let invalidSelection = false;
-    let invalidMove = false;
+	let invalidMove = false;
 
-    let turnPart = 0;
-    
-	function updateGame (userInput) {
+	let turnPart = 0;
+
+	function updateGame(userInput) {
 		let squareCoords = userInput.detail[0];
 		let squareContent = userInput.detail[1];
 		let square = BOARDSQUARES[squareCoords[0]][squareCoords[1]];
 
-        let currentBoard = boardHistory[boardHistory.length - 1];
+		let currentBoard = boardHistory[boardHistory.length - 1];
 
 		// Piece selection
-        if (turnPart === 0) do {
-			if (invalidSelection) invalidSelection = false;
-			if (invalidMove) invalidMove = false;
+		if (turnPart === 0)
+			do {
+				if (invalidSelection) invalidSelection = false;
+				if (invalidMove) invalidMove = false;
 
-            selectedPiece = squareContent;
-			if (selectedPiece[0] !== playerColor[0]) {
-				invalidSelection = true;
-				break;
-			}
-			
-            turnPart += 1;
-        } while (false)
-		// Destination square selection
-        else if (turnPart === 1) do {
-            selectedSquare = square;
-
-			// Allow user to selecte a different piece (of their own color)
-			if (squareContent[0] === playerColor[0]) {
 				selectedPiece = squareContent;
-				break;
-			}
+				if (selectedPiece[0] !== playerColor[0]) {
+					invalidSelection = true;
+					break;
+				}
 
-            moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
-			// Check for invalid piece movement
-            if (!moveResult || moveResult === 4) {
-			    invalidMove = true;
-                turnPart = 0;
-			    break;
-		    }
+				turnPart += 1;
+			} while (false);
+		// Destination square selection
+		else if (turnPart === 1)
+			do {
+				selectedSquare = square;
 
-			// If valid movement, get an updated board
-            switch (moveResult) {
-                case 1:
-                case 2:
-                    newBoard = getNewBoard(currentBoard, selectedPiece, selectedSquare);
-                    break;
-                case 3:
-                    newBoard = getNewBoardEnPassant(currentBoard, selectedPiece, selectedSquare);
-                    break;
-                case 5:
-                    newBoard = getNewBoardCastle(currentBoard, selectedPiece, selectedSquare);
-                    break;
-            }
+				// Allow user to selecte a different piece (of their own color)
+				if (squareContent[0] === playerColor[0]) {
+					selectedPiece = squareContent;
+					break;
+				}
 
-			// Check if the move would leave player's king in check; break if so.
-            if (isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor[0])) {
-                invalidMove = true;
-                turnPart = 0;
-                break;
-		    }
+				moveResult = verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
+				// Check for invalid piece movement
+				if (!moveResult || moveResult === 4) {
+					invalidMove = true;
+					turnPart = 0;
+					break;
+				}
 
-			// Push new board to history and reset variables for next turn
-            [playerColor, enemyColor] = [enemyColor, playerColor];
-            boardHistory = [...boardHistory, newBoard];
-            turnPart = 0;
+				// If valid movement, get an updated board
+				switch (moveResult) {
+					case 1:
+					case 2:
+						newBoard = getNewBoard(currentBoard, selectedPiece, selectedSquare);
+						break;
+					case 3:
+						newBoard = getNewBoardEnPassant(currentBoard, selectedPiece, selectedSquare);
+						break;
+					case 5:
+						newBoard = getNewBoardCastle(currentBoard, selectedPiece, selectedSquare);
+						break;
+				}
 
-        } while (false);
-    }
+				// Check if the move would leave player's king in check; break if so.
+				if (
+					isSquareInCheck([...boardHistory, newBoard], getPieceSquare(newBoard, playerColor[0] + 'KK'), playerColor[0])
+				) {
+					invalidMove = true;
+					turnPart = 0;
+					break;
+				}
+
+				// Push new board to history and reset variables for next turn
+				[playerColor, enemyColor] = [enemyColor, playerColor];
+				boardHistory = [...boardHistory, newBoard];
+				turnPart = 0;
+			} while (false);
+	}
 </script>
 
 <div>

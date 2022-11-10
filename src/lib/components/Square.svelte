@@ -6,26 +6,19 @@
 	export let position;
 
 	let squareColor = 'darkgrey';
-	if (position[0] % 2 === 0) {
-		if (position[1] % 2 === 0) {
-			squareColor = 'white';
-		}
-	}
-	else {
-		if (position[1] % 2 !== 0) {
-			squareColor = 'white';
-		}
+	if (position[0] % 2 === 0 && position[1] % 2 === 0) {
+		squareColor = 'white';
+	} else if (position[0] % 2 !== 0 && position[1] % 2 !== 0) {
+		squareColor = 'white';
 	}
 </script>
 
 <div>
-	<button 
-		on:click={() => dispatch('click', [position, content])}
-		style="background: {squareColor}">
+	<button on:click={() => dispatch('click', [position, content])} style="background: {squareColor}">
 		{#if content === 'x'}
 			<p />
 		{:else}
-			<img src="src/assets/{content[0] + content[2]}.svg" alt="{content[0] + content[2]}" />
+			<img src="src/assets/{content[0] + content[2]}.svg" alt={content[0] + content[2]} />
 		{/if}
 	</button>
 </div>
