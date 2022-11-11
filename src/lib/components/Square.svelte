@@ -27,13 +27,8 @@
 	button {
 		height: 72px;
 		width: 72px;
-
-		margin-right: -1px;
-		margin-top: -1px;
 		padding: 0;
-
-		/* background: #fff; */
-		border: 1px solid #999;
+		border: 1px solid #000;
 	}
 
 	img {

@@ -15,7 +15,7 @@
 <style>
 	.board {
 		display: grid;
-		grid-template-columns: 72px 72px 72px 72px 72px 72px 72px 72px;
-		grid-template-rows: 72px 72px 72px 72px 72px 72px 72px 72px;
+		grid-template-columns: 71px 71px 71px 71px 71px 71px 71px 71px;
+		grid-template-rows: 71px 71px 71px 71px 71px 71px 71px 71px;
 	}
 </style>
