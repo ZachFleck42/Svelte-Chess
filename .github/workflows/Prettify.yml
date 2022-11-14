@@ -6,13 +6,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: "latest"
+          version: "7.16.0"
         
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -23,5 +23,4 @@ jobs:
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          # commit_message: Automatically Prettified code
-          commit_message: ${{ github.event.head_commit.message }}
+          commit_message: "refactor(action): formatting"
