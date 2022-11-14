@@ -322,6 +322,7 @@ export function isSquareInCheck(boardHistory, square, playerColor) {
 }
 
 export function isKingInCheckmate(boardHistory, kingColor) {
+	return 0;
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let king = kingColor[0] + 'KK';
 
@@ -330,15 +331,16 @@ export function isKingInCheckmate(boardHistory, kingColor) {
 			let currentSquare = getSquareFromCoordinates([i, j]);
 			let currentSquareContent = currentBoard[i][j];
 
-			
+
 		}
 	}
 
 	return 1;
 }
 
-export function verifyValidMovement(boardHistory, playerColor, pieceMoved, destinationSquare) {
+export function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
+	let playerColor = pieceMoved[0];
 
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -481,9 +483,9 @@ export function getAllPieceMoves(boardHistory, piece) {
 	for (let i = 0; i < currentBoard.length; i++) {
 		for (let j = 0; j < currentBoard[i].length; j++) {
 			let square = getSquareFromCoordinates[i, j];
-			let moveValidity = verifyValidMovement(boardHistory, pieceColor, piece, square)
+			let validMove = verifyValidMovement(boardHistory, piece, square)
 
-			if (moveValidity && moveValidity !== 4) {
+			if (validMove) {
 				validMoves.push(square);
 			}
 		}
@@ -496,5 +498,20 @@ export function getAllPlayerMoves(boardHistory, playerColor) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let validMoves = [];
 
+	for (let i = 0; i < currentBoard.length; i++) {
+		for (let j = 0; j < currentBoard[i].length; j++) {
+			let square = getSquareFromCoordinates([i, j]);
+			console.log(square)
+			let squareContent = getSquareContent(currentBoard, square);
+			let pieceMoves = [];
 
+			if (squareContent[0] === playerColor[0]) {
+				pieceMoves = getAllPieceMoves(boardHistory, squareContent);
+			}
+
+			pieceMoves.forEach(move => validMoves.push([squareContent, move]));
+		}
+	}
+
+	return validMoves;
 }

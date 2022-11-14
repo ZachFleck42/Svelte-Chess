@@ -49,7 +49,7 @@
 				}
 
 				// Check for invalid piece movement
-				moveResult = Chess.verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
+				moveResult = Chess.verifyValidMovement(boardHistory, selectedPiece, selectedSquare);
 				if (!moveResult) {
 					invalidMove = true;
 					turnPart = 0;
@@ -64,6 +64,8 @@
 					gameWinner = playerColor;
 					break;
 				}
+
+				console.log(Chess.getAllPlayerMoves(boardHistory, playerColor))
 
 				[playerColor, enemyColor] = [enemyColor, playerColor];
 				turnPart = 0;
