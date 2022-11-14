@@ -1,5 +1,4 @@
 module.exports = {
-	tailwindConfig: './tailwind.config.cjs',
 	arrowParens: 'always',
 	bracketSameLine: true,
 	bracketSpacing: false,
@@ -10,10 +9,6 @@ module.exports = {
 	singleQuote: true,
 	tabWidth: 2,
 	useTabs: true,
-	importOrder: ['^@core/(.*)$', '^@server/(.*)$', '^@ui/(.*)$', '^[./]'],
-	importOrderSeparation: true,
-	importOrderSortSpecifiers: true,
-	// https://github.com/sveltejs/prettier-plugin-svelte/issues/155#issuecomment-831166730
 	overrides: [
 		{
 			files: '*.svelte',
