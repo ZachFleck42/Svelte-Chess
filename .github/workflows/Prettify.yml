@@ -23,4 +23,5 @@ jobs:
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Automatically Prettified code
+          # commit_message: Automatically Prettified code
+          commit_message: ${{ github.event.head_commit.message }}
