@@ -444,6 +444,8 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 					return pieceMoved;
 				} else return square;
 			}
-		});});
+		});
+	});
 
-	return newBoard;}
+	return newBoard;
+}
