@@ -1,7 +1,6 @@
 name: Prettier
-on: push:
-  branches:
-    - main
+on: [push]
+
 jobs:
   Prettify-Code:
     runs-on: ubuntu-latest
