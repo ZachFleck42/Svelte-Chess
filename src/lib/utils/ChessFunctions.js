@@ -287,7 +287,7 @@ export function isSquareInCheck(boardHistory, square, playerColor) {
 				switch (currentSquareContent[2]) {
 					case 'P': {
 						let p = verifyValidPawnMove(boardHistory, currentSquareContent, square);
-						if (p === 4 || p === 1) {
+						if (p === 1 || p === 4) {
 							return 1;
 						} else continue;
 					}
@@ -330,18 +330,7 @@ export function isKingInCheckmate(boardHistory, kingColor) {
 			let currentSquare = getSquareFromCoordinates([i, j]);
 			let currentSquareContent = currentBoard[i][j];
 
-			// Check if there's anywhere the king can safely move to
-			if (currentSquareContent === king || verifyValidMovement(boardHistory, kingColor, king, currentSquare)) {
-				if (isSquareInCheck(boardHistory, currentSquare, kingColor)) {
-					continue;
-				} else {
-					return 0;
-				}
-			}
-
-			// Check if a piece can prevent check
-			if (currentSquareContent[0] === king[0]) {
-			}
+			
 		}
 	}
 
@@ -368,20 +357,54 @@ export function verifyValidMovement(boardHistory, playerColor, pieceMoved, desti
 	}
 
 	// Check piece-specific movement
+	let moveResult = 0;
 	switch (pieceMoved[2]) {
 		case 'P':
-			return verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare);
+			moveResult = verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare);
+			break;
 		case 'N':
-			return verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare);
+			moveResult = verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare);
+			break;
 		case 'B':
-			return verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare);
+			moveResult = verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare);
+			break;
 		case 'R':
-			return verifyValidRookMove(currentBoard, pieceMoved, destinationSquare);
+			moveResult = verifyValidRookMove(currentBoard, pieceMoved, destinationSquare);
+			break;
 		case 'Q':
-			return verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare);
+			moveResult = verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare);
+			break;
 		case 'K':
-			return verifyValidKingMove(boardHistory, pieceMoved, destinationSquare);
+			moveResult = verifyValidKingMove(boardHistory, pieceMoved, destinationSquare);
+			break;
 	}
+
+	// If invalid movement, exit function now
+	if (!moveResult || moveResult === 4) return 0;
+
+	// Get an updated board with the attempted move to check for check
+	let newBoard = [];
+	switch (moveResult) {
+		case 1:
+		case 2:
+			newBoard = getNewBoard(currentBoard, pieceMoved, destinationSquare);
+			break;
+		case 3:
+			newBoard = getNewBoardEnPassant(currentBoard, pieceMoved, destinationSquare);
+			break;
+		case 5:
+			newBoard = getNewBoardCastle(currentBoard, pieceMoved, destinationSquare);
+			break;
+	}
+
+	// Check if the move would leave player's king in check
+	let kingSquare = getPieceSquare(newBoard, playerColor[0] + 'KK');
+	if (isSquareInCheck([...boardHistory, newBoard], kingSquare, playerColor[0])) {
+		return 0;
+	}
+
+	// Move is valid. Return the updated board
+	return newBoard;
 }
 
 export function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
@@ -448,4 +471,30 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 	});
 
 	return newBoard;
+}
+
+export function getAllPieceMoves(boardHistory, piece) {
+	let currentBoard = boardHistory[boardHistory.length - 1];
+	let pieceColor = piece[0];
+	let validMoves = [];
+	
+	for (let i = 0; i < currentBoard.length; i++) {
+		for (let j = 0; j < currentBoard[i].length; j++) {
+			let square = getSquareFromCoordinates[i, j];
+			let moveValidity = verifyValidMovement(boardHistory, pieceColor, piece, square)
+
+			if (moveValidity && moveValidity !== 4) {
+				validMoves.push(square);
+			}
+		}
+	}
+
+	return validMoves;
+}
+
+export function getAllPlayerMoves(boardHistory, playerColor) {
+	let currentBoard = boardHistory[boardHistory.length - 1];
+	let validMoves = [];
+
+
 }

@@ -23,8 +23,6 @@
 		let squareContent = userInput.detail[1];
 		let square = Chess.BOARDSQUARES[squareCoords[0]][squareCoords[1]];
 
-		let currentBoard = boardHistory[boardHistory.length - 1];
-
 		// Piece selection
 		if (turnPart === 0)
 			do {
@@ -50,38 +48,16 @@
 					break;
 				}
 
-				moveResult = Chess.verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
 				// Check for invalid piece movement
-				if (!moveResult || moveResult === 4) {
-					invalidMove = true;
-					turnPart = 0;
-					break;
-				}
-
-				// If valid movement, get an updated board
-				switch (moveResult) {
-					case 1:
-					case 2:
-						newBoard = Chess.getNewBoard(currentBoard, selectedPiece, selectedSquare);
-						break;
-					case 3:
-						newBoard = Chess.getNewBoardEnPassant(currentBoard, selectedPiece, selectedSquare);
-						break;
-					case 5:
-						newBoard = Chess.getNewBoardCastle(currentBoard, selectedPiece, selectedSquare);
-						break;
-				}
-
-				// Check if the move would leave player's king in check.
-				let kingSquare = Chess.getPieceSquare(newBoard, playerColor[0] + 'KK');
-				if (Chess.isSquareInCheck([...boardHistory, newBoard], kingSquare, playerColor[0])) {
+				moveResult = Chess.verifyValidMovement(boardHistory, playerColor, selectedPiece, selectedSquare);
+				if (!moveResult) {
 					invalidMove = true;
 					turnPart = 0;
 					break;
 				}
 
 				// Move is valid; push to board history
-				boardHistory = [...boardHistory, newBoard];
+				boardHistory = [...boardHistory, moveResult];
 
 				// Check for checkmate
 				if (Chess.isKingInCheckmate(boardHistory, enemyColor)) {
