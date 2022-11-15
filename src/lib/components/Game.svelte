@@ -9,7 +9,7 @@
 
 	let selectedPiece = '';
 	let selectedSquare = '';
-	let moveResult = 0;
+	let newBoard = 0;
 
 	let invalidSelection = false;
 	let invalidMove = false;
@@ -46,15 +46,15 @@
 			}
 
 			// Check for invalid piece movement
-			moveResult = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
-			if (!moveResult) {
+			newBoard = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
+			if (!newBoard) {
 				invalidMove = true;
 				turnPart = 0;
 				break;
 			}
 
 			// Move is valid; push to board history
-			boardHistory = [...boardHistory, moveResult];
+			boardHistory = [...boardHistory, newBoard];
 
 			// Check for checkmate
 			if (Chess.isKingInCheckmate(boardHistory, enemyColor)) {

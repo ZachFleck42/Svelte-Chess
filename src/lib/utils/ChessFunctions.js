@@ -9,6 +9,7 @@ export const BOARDSQUARES = [
 	['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'],
 ];
 
+
 export const INITIALBOARD = [
 	['BQR', 'BQN', 'BQB', 'BQQ', 'BKK', 'BKB', 'BKN', 'BKR'],
 	['BAP', 'BBP', 'BCP', 'BDP', 'BEP', 'BFP', 'BGP', 'BHP'],
@@ -20,9 +21,11 @@ export const INITIALBOARD = [
 	['WQR', 'WQN', 'WQB', 'WQQ', 'WKK', 'WKB', 'WKN', 'WKR'],
 ];
 
+
 export function getSquareFromCoordinates(coordinates) {
 	return BOARDSQUARES[coordinates[0]][coordinates[1]];
 }
+
 
 export function getCoordinatesFromSquare(square) {
 	for (let i = 0; i < BOARDSQUARES.length; i++) {
@@ -34,6 +37,7 @@ export function getCoordinatesFromSquare(square) {
 	}
 }
 
+
 export function getPieceCoordinates(gameBoard, gamePiece) {
 	for (let i = 0; i < gameBoard.length; i++) {
 		for (let j = 0; j < gameBoard[i].length; j++) {
@@ -44,14 +48,17 @@ export function getPieceCoordinates(gameBoard, gamePiece) {
 	}
 }
 
+
 export function getPieceSquare(gameBoard, gamePiece) {
 	return getSquareFromCoordinates(getPieceCoordinates(gameBoard, gamePiece));
 }
+
 
 export function getSquareContent(currentBoard, square) {
 	let squareCoords = getCoordinatesFromSquare(square);
 	return currentBoard[squareCoords[0]][squareCoords[1]];
 }
+
 
 export function hasPieceMoved(boardHistory, piece) {
 	let pieceInitialCoords = getPieceCoordinates(INITIALBOARD, piece);
@@ -63,6 +70,7 @@ export function hasPieceMoved(boardHistory, piece) {
 
 	return 0;
 }
+
 
 /* Returns 0 if invalid move, 1 if valid capturing move, 2 if valid forward
 movement (non-capturing), 3 if valid en passant, and 4 if pawn COULD capture
@@ -117,6 +125,7 @@ export function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare)
 	return 0;
 }
 
+
 // Returns 0 if invalid move and 1 if valid normal/capturing move
 export function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
@@ -131,6 +140,7 @@ export function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquar
 		return 1;
 	}
 }
+
 
 // Returns 0 if invalid move and 1 if valid normal/capturing move
 export function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
@@ -157,6 +167,7 @@ export function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquar
 
 	return 1;
 }
+
 
 // Returns 0 if invalid move and 1 if valid normal/capturing move
 export function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
@@ -186,6 +197,7 @@ export function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare)
 
 	return 1;
 }
+
 
 // Returns 0 if invalid move and 1 if valid normal/capturing move
 export function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
@@ -218,6 +230,7 @@ export function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare
 
 	return 1;
 }
+
 
 // Returns 0 if invalid move, 1 if valid normal/capturing move, and 5 if valid castling move
 export function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
@@ -270,6 +283,7 @@ export function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare)
 	return 0;
 }
 
+
 export function verifyValidMovement(boardHistory, pieceMoved, destinationSquare) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 
@@ -288,6 +302,7 @@ export function verifyValidMovement(boardHistory, pieceMoved, destinationSquare)
 			return verifyValidKingMove(boardHistory, pieceMoved, destinationSquare);
 	}
 }
+
 
 export function isSquareInCheck(boardHistory, squareToCheck, playerColor) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
@@ -312,20 +327,77 @@ export function isSquareInCheck(boardHistory, squareToCheck, playerColor) {
 	return 0;
 }
 
-export function isKingInCheckmate(boardHistory, kingColor) {
-	let king = kingColor[0] + 'KK';
 
-	let kingMoves = getAllPieceMoves(boardHistory, king);
-	if (kingMoves.length >= 1) return 0;
+export function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
+	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
-	let playerMoves = getAllPlayerMoves(boardHistory, kingColor);
-	if (playerMoves.length >= 1) return 0;
+	let newBoard = oldBoard.map((row, rowIndex) => {
+		return row.map((square, squareIndex) => {
+			for (let i = 0; i < row.length; i++) {
+				if (square === pieceMoved) {
+					return 'x';
+				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
+					return pieceMoved;
+				} else return square;
+			}
+		});
+	});
 
-	return 1;
+	return newBoard;
 }
 
-// Function checks if a move is valid. If not, returns 0.
-// If the move is valid, returns an updated board with the move made.
+
+export function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
+	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+	let kingStartCoords = getPieceCoordinates(oldBoard, pieceMoved);
+	let horizontalDisplacement = kingStartCoords[1] - destSquareCoords[1];
+
+	let direction = horizontalDisplacement < 0 ? 'K' : 'Q';
+	let rook = pieceMoved[0] + direction + 'R';
+	let rookNewPos = direction === 'K' ? -1 : 1;
+
+	let newBoard = oldBoard.map((row, rowIndex) => {
+		return row.map((square, squareIndex) => {
+			for (let i = 0; i < row.length; i++) {
+				if (square === pieceMoved || oldBoard[rowIndex][squareIndex] === rook) {
+					return 'x';
+				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
+					return pieceMoved;
+				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] + rookNewPos === squareIndex) {
+					return rook;
+				} else return square;
+			}
+		});
+	});
+
+	return newBoard;
+}
+
+
+export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
+	let pieceCoords = getPieceCoordinates(oldBoard, pieceMoved);
+	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+	let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
+
+	let newBoard = oldBoard.map((row, rowIndex) => {
+		return row.map((square, squareIndex) => {
+			for (let i = 0; i < row.length; i++) {
+				if (square === pieceMoved) {
+					return 'x';
+				} else if (rowIndex === destSquareCoords[0] + verticalDisplacement && squareIndex === destSquareCoords[1]) {
+					return 'x';
+				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
+					return pieceMoved;
+				} else return square;
+			}
+		});
+	});
+
+	return newBoard;
+}
+
+
+// Returns 0 if invalid move, otherwise returns a new board with move performed
 export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let playerColor = pieceMoved[0];
@@ -360,74 +432,10 @@ export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 		return 0;
 	}
 
+	// All filters passed; move is valid. Return the updated board.
 	return newBoard;
 }
 
-export function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
-	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
-
-	let newBoard = oldBoard.map((row, rowIndex) => {
-		return row.map((square, squareIndex) => {
-			for (let i = 0; i < row.length; i++) {
-				if (square === pieceMoved) {
-					return 'x';
-				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
-					return pieceMoved;
-				} else return square;
-			}
-		});
-	});
-
-	return newBoard;
-}
-
-export function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
-	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
-	let kingStartCoords = getPieceCoordinates(oldBoard, pieceMoved);
-	let horizontalDisplacement = kingStartCoords[1] - destSquareCoords[1];
-
-	let direction = horizontalDisplacement < 0 ? 'K' : 'Q';
-	let rook = pieceMoved[0] + direction + 'R';
-	let rookNewPos = direction === 'K' ? -1 : 1;
-
-	let newBoard = oldBoard.map((row, rowIndex) => {
-		return row.map((square, squareIndex) => {
-			for (let i = 0; i < row.length; i++) {
-				if (square === pieceMoved || oldBoard[rowIndex][squareIndex] === rook) {
-					return 'x';
-				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
-					return pieceMoved;
-				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] + rookNewPos === squareIndex) {
-					return rook;
-				} else return square;
-			}
-		});
-	});
-
-	return newBoard;
-}
-
-export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
-	let pieceCoords = getPieceCoordinates(oldBoard, pieceMoved);
-	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
-	let verticalDisplacement = pieceCoords[0] - destSquareCoords[0];
-
-	let newBoard = oldBoard.map((row, rowIndex) => {
-		return row.map((square, squareIndex) => {
-			for (let i = 0; i < row.length; i++) {
-				if (square === pieceMoved) {
-					return 'x';
-				} else if (rowIndex === destSquareCoords[0] + verticalDisplacement && squareIndex === destSquareCoords[1]) {
-					return 'x';
-				} else if (destSquareCoords[0] === rowIndex && destSquareCoords[1] === squareIndex) {
-					return pieceMoved;
-				} else return square;
-			}
-		});
-	});
-
-	return newBoard;
-}
 
 export function getAllPieceMoves(boardHistory, piece) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
@@ -448,6 +456,7 @@ export function getAllPieceMoves(boardHistory, piece) {
 	return validMoves;
 }
 
+
 export function getAllPlayerMoves(boardHistory, playerColor) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let validMoves = [];
@@ -466,4 +475,11 @@ export function getAllPlayerMoves(boardHistory, playerColor) {
 	}
 
 	return validMoves;
+}
+
+
+export function isKingInCheckmate(boardHistory, kingColor) {
+	let playerMoves = getAllPlayerMoves(boardHistory, kingColor);
+	if (playerMoves.length >= 1) return 0;
+	else return 1;
 }
