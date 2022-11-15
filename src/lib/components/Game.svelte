@@ -23,50 +23,48 @@
 		let square = Chess.BOARDSQUARES[squareCoords[0]][squareCoords[1]];
 
 		// Piece selection
-		if (turnPart === 0)
-			do {
-				if (invalidSelection) invalidSelection = false;
-				if (invalidMove) invalidMove = false;
+		if (turnPart === 0) do {
+			if (invalidSelection) invalidSelection = false;
+			if (invalidMove) invalidMove = false;
 
-				selectedPiece = squareContent;
-				if (selectedPiece[0] !== playerColor[0]) {
-					invalidSelection = true;
-					break;
-				}
+			selectedPiece = squareContent;
+			if (selectedPiece[0] !== playerColor[0]) {
+				invalidSelection = true;
+				break;
+			}
 
-				turnPart += 1;
-			} while (false);
+			turnPart += 1;
+		} while (false);
 		// Destination square selection
-		else if (turnPart === 1)
-			do {
-				selectedSquare = square;
+		else if (turnPart === 1) do {
+			selectedSquare = square;
 
-				// Allow user to selecte a different piece (of their own color)
-				if (squareContent[0] === playerColor[0]) {
-					selectedPiece = squareContent;
-					break;
-				}
+			// Allow user to selecte a different piece (of their own color)
+			if (squareContent[0] === playerColor[0]) {
+				selectedPiece = squareContent;
+				break;
+			}
 
-				// Check for invalid piece movement
-				moveResult = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
-				if (!moveResult) {
-					invalidMove = true;
-					turnPart = 0;
-					break;
-				}
-
-				// Move is valid; push to board history
-				boardHistory = [...boardHistory, moveResult];
-
-				// Check for checkmate
-				if (Chess.isKingInCheckmate(boardHistory, enemyColor)) {
-					gameWinner = playerColor;
-					break;
-				}
-
-				[playerColor, enemyColor] = [enemyColor, playerColor];
+			// Check for invalid piece movement
+			moveResult = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
+			if (!moveResult) {
+				invalidMove = true;
 				turnPart = 0;
-			} while (false);
+				break;
+			}
+
+			// Move is valid; push to board history
+			boardHistory = [...boardHistory, moveResult];
+
+			// Check for checkmate
+			if (Chess.isKingInCheckmate(boardHistory, enemyColor)) {
+				gameWinner = playerColor;
+				break;
+			}
+
+			[playerColor, enemyColor] = [enemyColor, playerColor];
+			turnPart = 0;
+		} while (false);
 	}
 </script>
 

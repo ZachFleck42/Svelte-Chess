@@ -211,9 +211,8 @@ export function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare
 	else if (horizontalDisplacement > 0) horizDirection = -1;
 
 	// Look for any pieces in the queen's path
-	let squareContent = '';
 	for (let i = 1; i < Math.max(Math.abs(horizontalDisplacement), Math.abs(verticalDisplacement)); i++) {
-		squareContent = currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection];
+		let squareContent = currentBoard[pieceCoords[0] + i * vertDirection][pieceCoords[1] + i * horizDirection];
 		if (squareContent !== 'x') return 0;
 	}
 
@@ -243,13 +242,11 @@ export function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare)
 			if (!hasPieceMoved(boardHistory, pieceMoved)) {
 				let horizDirection = horizontalDisplacement < 0 ? 1 : -1;
 				let squaresToCheck = horizDirection === 1 ? 3 : 4;
-				let square = '';
-				let squareContent = '';
 
 				// Check every square between the king and rook for various nonsense
 				for (let i = 1; i <= squaresToCheck; i++) {
-					square = getSquareFromCoordinates([pieceCoords[0], pieceCoords[1] + i * horizDirection]);
-					squareContent = currentBoard[pieceCoords[0]][pieceCoords[1] + i * horizDirection];
+					let square = getSquareFromCoordinates([pieceCoords[0], pieceCoords[1] + i * horizDirection]);
+					let squareContent = currentBoard[pieceCoords[0]][pieceCoords[1] + i * horizDirection];
 
 					// All spaces between king and rook must be empty
 					if (i < squaresToCheck && squareContent !== 'x') {
@@ -316,18 +313,13 @@ export function isSquareInCheck(boardHistory, squareToCheck, playerColor) {
 }
 
 export function isKingInCheckmate(boardHistory, kingColor) {
-	return 0;
-	let currentBoard = boardHistory[boardHistory.length - 1];
 	let king = kingColor[0] + 'KK';
 
-	for (let i = 0; i < currentBoard.length; i++) {
-		for (let j = 0; j < currentBoard[i].length; j++) {
-			let currentSquare = getSquareFromCoordinates([i, j]);
-			let currentSquareContent = currentBoard[i][j];
+	let kingMoves = getAllPieceMoves(boardHistory, king);
+	if (kingMoves.length >= 1) return 0;
 
-
-		}
-	}
+	let playerMoves = getAllPlayerMoves(boardHistory, kingColor);
+	if (playerMoves.length >= 1) return 0;
 
 	return 1;
 }
@@ -462,8 +454,7 @@ export function getAllPlayerMoves(boardHistory, playerColor) {
 
 	for (let i = 0; i < currentBoard.length; i++) {
 		for (let j = 0; j < currentBoard[i].length; j++) {
-			let square = getSquareFromCoordinates([i, j]);
-			let squareContent = getSquareContent(currentBoard, square);
+			let squareContent = currentBoard[i][j];
 			let pieceMoves = [];
 
 			if (squareContent[0] === playerColor[0]) {
