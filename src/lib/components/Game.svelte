@@ -3,7 +3,6 @@
 	import * as Chess from '../utils/ChessFunctions.js';
 
 	let boardHistory = [Chess.INITIALBOARD];
-	let newBoard = [];
 
 	let playerColor = 'White';
 	let enemyColor = 'Black';
@@ -49,7 +48,7 @@
 				}
 
 				// Check for invalid piece movement
-				moveResult = Chess.verifyValidMovement(boardHistory, selectedPiece, selectedSquare);
+				moveResult = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
 				if (!moveResult) {
 					invalidMove = true;
 					turnPart = 0;
@@ -64,8 +63,6 @@
 					gameWinner = playerColor;
 					break;
 				}
-
-				console.log(Chess.getAllPlayerMoves(boardHistory, playerColor))
 
 				[playerColor, enemyColor] = [enemyColor, playerColor];
 				turnPart = 0;
