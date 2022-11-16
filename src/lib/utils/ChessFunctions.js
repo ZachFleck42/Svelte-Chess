@@ -403,21 +403,28 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 	return newBoard;
 }
 
+export function getChessNotation(pieceMoved, destinationSquare, moveProps=[]) {
+
+}
+
 
 // Returns 0 if invalid move, otherwise returns a new board with move performed.
 export function movePiece(boardHistory, pieceMoved, destinationSquare) {
+	let moveProperties = [];
+
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let playerColor = pieceMoved[0];
+	let enemyColor = playerColor === 'W' ? 'B' : 'W';
 
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
-	let destinationSquareContent = getSquareContent(currentBoard, destinationSquare);
+	let destSquareContent = getSquareContent(currentBoard, destinationSquare);
 
 	// Verify piece is not moving to the square it's already on
 	if (pieceCoords === destSquareCoords) return 0;
 
 	// Verify piece is not attempting to capture a piece of its own color
-	if (playerColor === destinationSquareContent[0]) return 0;
+	if (playerColor === destSquareContent[0]) return 0;
 
 	// Verify piece is moving properly
 	let movementType = verifyValidMovement(boardHistory, pieceMoved, destinationSquare);
@@ -439,7 +446,20 @@ export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 		return 0;
 	}
 
-	// All filters passed; move is valid. Return the updated board.
+	// Get move properties for chess notation
+	if (destSquareContent[0] === enemyColor || movementType === 3) {
+		moveProperties.push('x');
+	}
+
+	let enemyKingSquare = getPieceSquare(newBoard, enemyColor + 'KK');
+	if (isSquareInCheck([...boardHistory, newBoard], enemyKingSquare, enemyColor)) {
+		moveProperties.push('+');
+	}
+
+	if (isKingInCheckmate([...boardHistory, newBoard], enemyColor)) {
+		moveProperties.push('#');
+	}
+
 	return newBoard;
 }
 
