@@ -72,10 +72,9 @@ export function hasPieceMoved(boardHistory, piece) {
 	return 0;
 }
 
-
 /* Returns 0 if invalid move, 1 if valid capturing move, 2 if valid forward
 movement (non-capturing), 3 if valid en passant, and 4 if pawn COULD capture
-if there were a piece there (used to determine if a space is in check) */
+if there were a piece there (used to determine if a space is in check). */
 export function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 
@@ -126,8 +125,7 @@ export function verifyValidPawnMove(boardHistory, pieceMoved, destinationSquare)
 	return 0;
 }
 
-
-// Returns 0 if invalid move and 1 if valid normal/capturing move
+// Returns 0 if invalid move and 1 if valid normal/capturing move.
 export function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquare) {
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -142,8 +140,7 @@ export function verifyValidKnightMove(currentBoard, pieceMoved, destinationSquar
 	}
 }
 
-
-// Returns 0 if invalid move and 1 if valid normal/capturing move
+// Returns 0 if invalid move and 1 if valid normal/capturing move.
 export function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquare) {
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -169,8 +166,7 @@ export function verifyValidBishopMove(currentBoard, pieceMoved, destinationSquar
 	return 1;
 }
 
-
-// Returns 0 if invalid move and 1 if valid normal/capturing move
+// Returns 0 if invalid move and 1 if valid normal/capturing move.
 export function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare) {
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -199,8 +195,7 @@ export function verifyValidRookMove(currentBoard, pieceMoved, destinationSquare)
 	return 1;
 }
 
-
-// Returns 0 if invalid move and 1 if valid normal/capturing move
+// Returns 0 if invalid move and 1 if valid normal/capturing move.
 export function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare) {
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -232,8 +227,7 @@ export function verifyValidQueenMove(currentBoard, pieceMoved, destinationSquare
 	return 1;
 }
 
-
-// Returns 0 if invalid move, 1 if valid normal/capturing move, and 5 if valid castling move
+// Returns 0 if invalid move, 1 if valid normal/capturing move, and 5 if valid castling move.
 export function verifyValidKingMove(boardHistory, pieceMoved, destinationSquare) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 
@@ -329,7 +323,7 @@ export function isSquareInCheck(boardHistory, squareToCheck, playerColor) {
 	return 0;
 }
 
-// Returns an updated board with a valid standard move
+// Returns an updated board with a valid standard move.
 export function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 
@@ -351,7 +345,7 @@ export function getNewBoard(oldBoard, pieceMoved, destinationSquare) {
 	return newBoard;
 }
 
-// Returns an updated board with a valid castling move
+// Returns an updated board with a valid castling move.
 export function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
 	let kingStartCoords = getPieceCoordinates(oldBoard, pieceMoved);
@@ -382,7 +376,7 @@ export function getNewBoardCastle(oldBoard, pieceMoved, destinationSquare) {
 	return newBoard;
 }
 
-
+// Returns an updated board with a valid en passant move.
 export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 	let pieceCoords = getPieceCoordinates(oldBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -410,7 +404,7 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 }
 
 
-// Returns 0 if invalid move, otherwise returns a new board with move performed
+// Returns 0 if invalid move, otherwise returns a new board with move performed.
 export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let playerColor = pieceMoved[0];
