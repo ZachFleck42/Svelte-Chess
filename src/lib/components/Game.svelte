@@ -65,8 +65,9 @@
 				break;
 			}
 
-			[playerColor, enemyColor] = [enemyColor, playerColor];
+			// Prepare for the next turn
 			turnPart = 0;
+			[playerColor, enemyColor] = [enemyColor, playerColor];
 		} while (false);
 	}
 </script>
