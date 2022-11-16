@@ -403,18 +403,32 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
 	return newBoard;
 }
 
-export function getChessNotation(pieceMoved, destinationSquare, moveProps=[]) {
+export function getChessNotation(boardHistory, pieceMoved, destinationSquare, movementType) {
+	let destSquareContent = getSquareContent(destinationSquare);
+	let playerColor = pieceMoved[0];
+	let enemyColor = playerColor === 'W' ? 'B' : 'W';
 
+	let moveProperties = [];
+
+	if (destSquareContent[0] === enemyColor || movementType === 3) {
+		moveProperties.push('x');
+	}
+
+	let enemyKingSquare = getPieceSquare(newBoard, enemyColor + 'KK');
+	if (isSquareInCheck([...boardHistory, newBoard], enemyKingSquare, enemyColor)) {
+		moveProperties.push('+');
+	}
+
+	if (isKingInCheckmate([...boardHistory, newBoard], enemyColor)) {
+		moveProperties.push('#');
+	}
 }
 
 
 // Returns 0 if invalid move, otherwise returns a new board with move performed.
 export function movePiece(boardHistory, pieceMoved, destinationSquare) {
-	let moveProperties = [];
-
 	let currentBoard = boardHistory[boardHistory.length - 1];
 	let playerColor = pieceMoved[0];
-	let enemyColor = playerColor === 'W' ? 'B' : 'W';
 
 	let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
 	let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
@@ -446,19 +460,8 @@ export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 		return 0;
 	}
 
-	// Get move properties for chess notation
-	if (destSquareContent[0] === enemyColor || movementType === 3) {
-		moveProperties.push('x');
-	}
-
-	let enemyKingSquare = getPieceSquare(newBoard, enemyColor + 'KK');
-	if (isSquareInCheck([...boardHistory, newBoard], enemyKingSquare, enemyColor)) {
-		moveProperties.push('+');
-	}
-
-	if (isKingInCheckmate([...boardHistory, newBoard], enemyColor)) {
-		moveProperties.push('#');
-	}
+	// Get the chess notation of the movement
+	let notation = getChessNotation(boardHistory, pieceMoved, destinationSquare, movementType);
 
 	return newBoard;
 }
