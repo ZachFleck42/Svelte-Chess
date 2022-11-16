@@ -1,15 +1,16 @@
 <script>
 	import Board from './Board.svelte';
 	import * as Chess from '../utils/ChessFunctions.js';
+  import MoveHistoryCard from './MoveHistoryCard.svelte';
 
 	let boardHistory = [Chess.INITIALBOARD];
+	let moveHistory = [];
 
 	let playerColor = 'White';
 	let enemyColor = 'Black';
 
 	let selectedPiece = '';
 	let selectedSquare = '';
-	let newBoard = 0;
 
 	let invalidSelection = false;
 	let invalidMove = false;
@@ -17,6 +18,7 @@
 	let turnPart = 0;
 	let gameWinner = '';
 
+	// Handles clicks on the game board.
 	function updateGame(userInput) {
 		let squareCoords = userInput.detail[0];
 		let squareContent = userInput.detail[1];
@@ -46,15 +48,16 @@
 			}
 
 			// Check for invalid piece movement
-			newBoard = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
+			let newBoard = Chess.movePiece(boardHistory, selectedPiece, selectedSquare);
 			if (!newBoard) {
 				invalidMove = true;
 				turnPart = 0;
 				break;
 			}
 
-			// Move is valid; push to board history
+			// Move is valid; push to board and move histories
 			boardHistory = [...boardHistory, newBoard];
+			moveHistory = [...moveHistory, [selectedPiece, selectedSquare]]
 
 			// Check for checkmate
 			if (Chess.isKingInCheckmate(boardHistory, enemyColor)) {
@@ -69,15 +72,16 @@
 </script>
 
 <div>
-	<div class="game-board">
+	<div class="game-container">
 		<Board board={boardHistory[boardHistory.length - 1]} on:click={updateGame} />
+		<MoveHistoryCard {moveHistory} />
 	</div>
+
 	<div class="game-info">
 		{#if gameWinner}
 			<p style="color: green">{gameWinner} wins!</p>
 		{/if}
 
-		<!-- Error readouts -->
 		{#if invalidMove}
 			<p style="color: red">Invalid move</p>
 		{:else if invalidSelection}
@@ -95,7 +99,7 @@
 </div>
 
 <style>
-	.game-board {
+	.game-container {
 		display: flex;
 		justify-content: center;
 		margin: 40px auto;
