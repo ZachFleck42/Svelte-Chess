@@ -461,7 +461,7 @@ export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 	}
 
 	// Get the chess notation of the movement
-	let notation = getChessNotation(boardHistory, pieceMoved, destinationSquare, movementType);
+	// let notation = getChessNotation(boardHistory, pieceMoved, destinationSquare, movementType);
 
 	return newBoard;
 }
