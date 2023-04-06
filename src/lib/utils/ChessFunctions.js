@@ -498,32 +498,107 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
   return newBoard;
 }
 
-export function getChessNotation(
-  boardHistory,
-  pieceMoved,
-  destinationSquare,
-  movementType
-) {
-  let destSquareContent = getSquareContent(destinationSquare);
+export function getChessNotation(boardHistory, pieceMoved, destinationSquare) {
+  let currentBoard = boardHistory[boardHistory.length - 1];
+  let previousBoard = boardHistory[boardHistory.length - 2];
+  let previousSquare = getPieceSquare(previousBoard, pieceMoved);
+
   let playerColor = pieceMoved[0];
   let enemyColor = playerColor === "W" ? "B" : "W";
 
-  let moveProperties = [];
+  let notation = "";
 
-  if (destSquareContent[0] === enemyColor || movementType === 3) {
-    moveProperties.push("x");
+  // Notate castling (if applicable)
+  if (pieceMoved[2] === "K") {
+    let previousCoords = getCoordinatesFromSquare(previousSquare);
+    let currentCoords = getCoordinatesFromSquare(destinationSquare);
+
+    let horizontalDisplacement = previousCoords[1] - currentCoords[1];
+    if (horizontalDisplacement === -2) return "0-0";
+    else if (horizontalDisplacement === 2) return "0-0-0";
   }
 
-  let enemyKingSquare = getPieceSquare(newBoard, enemyColor + "KK");
+  // Notate piece (if applicable)
+  if (pieceMoved[2] !== "P") notation += pieceMoved[2];
+
+  // Check for capturing and/or disambiguation
+  let previousEnemyPieceCount = 0;
+  let currentEnemyPieceCount = 0;
+  let disambiguationSquares = [];
+  for (let i = 0; i < BOARDSQUARES.length; i++) {
+    for (let j = 0; j < BOARDSQUARES[i].length; j++) {
+      let sqr = BOARDSQUARES[i][j];
+      let prvSqr = previousBoard[i][j];
+      let curSqr = currentBoard[i][j];
+
+      /* Counting the number of enemy pieces before/after move is more complicated
+      compared to just checking destination square content, but is necessary because
+      en passant is a thing */
+      if (prvSqr[0] === enemyColor) previousEnemyPieceCount += 1;
+      if (curSqr[0] === enemyColor) currentEnemyPieceCount += 1;
+
+      // Checking if disambiguation is necessary
+      if (
+        sqr !== previousSquare &&
+        pieceMoved[2] !== "P" &&
+        prvSqr[0] === playerColor &&
+        prvSqr[2] === pieceMoved[2]
+      ) {
+        if (
+          verifyValidMovement(
+            boardHistory.slice(0, -1),
+            prvSqr,
+            destinationSquare
+          )
+        ) {
+          disambiguationSquares.push(sqr);
+        }
+      }
+    }
+  }
+
+  // Notate disambiguation (if applicable)
+  if (disambiguationSquares.length > 0) {
+    /* This may look more complicated than it needs to be, but in the extremely rare case that there 
+    is both a duplicate rank AND file, we must ensure we notate the file before the rank. */
+    let notateFile = false;
+    let notateRank = false;
+
+    disambiguationSquares.forEach((square) => {
+      if (square[0] === previousSquare[0]) notateRank = true;
+      if (square[1] === previousSquare[1]) notateFile = true;
+    });
+
+    if (notateFile) notation += previousSquare[0];
+    if (notateRank) notation += previousSquare[1];
+  }
+
+  // Notate capture (if applicable)
+  if (previousEnemyPieceCount > currentEnemyPieceCount) {
+    if (pieceMoved[2] === "P") notation += previousSquare[0];
+    notation += "x";
+  }
+
+  // Notate destination square
+  notation += destinationSquare;
+
+  // Notate pawn promotion (if applicable)
   if (
-    isSquareInCheck([...boardHistory, newBoard], enemyKingSquare, enemyColor)
+    pieceMoved[2] === "P" &&
+    (destinationSquare[1] === "1" || destinationSquare[1] === "8")
   ) {
-    moveProperties.push("+");
+    notation += getSquareContent(currentBoard, destinationSquare)[2];
   }
 
-  if (isKingInCheckmate([...boardHistory, newBoard], enemyColor)) {
-    moveProperties.push("#");
+  // Notate check/checkmate (if applicable)
+  let enemyKingSquare = getPieceSquare(currentBoard, enemyColor + "KK");
+  if (isKingInCheckmate(boardHistory, enemyColor)) {
+    notation += "#";
+  } else if (isSquareInCheck(boardHistory, enemyKingSquare, enemyColor)) {
+    notation += "+";
   }
+
+  return notation;
 }
 
 // Returns 0 if invalid move, otherwise returns a new board with move performed.
@@ -533,6 +608,7 @@ export function movePiece(boardHistory, pieceMoved, destinationSquare) {
 
   let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
   let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+
   let destSquareContent = getSquareContent(currentBoard, destinationSquare);
 
   // Verify piece is not moving to the square it's already on
@@ -566,9 +642,6 @@ export function movePiece(boardHistory, pieceMoved, destinationSquare) {
   if (isSquareInCheck([...boardHistory, newBoard], kingSquare, playerColor)) {
     return 0;
   }
-
-  // Get the chess notation of the movement
-  // let notation = getChessNotation(boardHistory, pieceMoved, destinationSquare, movementType);
 
   return newBoard;
 }
