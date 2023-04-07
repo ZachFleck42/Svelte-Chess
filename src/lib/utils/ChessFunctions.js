@@ -498,6 +498,98 @@ export function getNewBoardEnPassant(oldBoard, pieceMoved, destinationSquare) {
   return newBoard;
 }
 
+// Returns 0 if invalid move, otherwise returns a new board with move performed.
+export function movePiece(boardHistory, pieceMoved, destinationSquare) {
+  let currentBoard = boardHistory[boardHistory.length - 1];
+  let playerColor = pieceMoved[0];
+
+  let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
+  let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
+
+  let destSquareContent = getSquareContent(currentBoard, destinationSquare);
+
+  // Verify piece is not moving to the square it's already on
+  if (pieceCoords === destSquareCoords) return 0;
+
+  // Verify piece is not attempting to capture a piece of its own color
+  if (playerColor === destSquareContent[0]) return 0;
+
+  // Verify piece is moving properly
+  let movementType = verifyValidMovement(
+    boardHistory,
+    pieceMoved,
+    destinationSquare
+  );
+  if (!movementType || movementType === 4) return 0;
+
+  // Get a new board with the attempted move
+  let newBoard = [];
+  if (movementType === 3) {
+    newBoard = getNewBoardEnPassant(
+      currentBoard,
+      pieceMoved,
+      destinationSquare
+    );
+  } else if (movementType === 5) {
+    newBoard = getNewBoardCastle(currentBoard, pieceMoved, destinationSquare);
+  } else newBoard = getNewBoard(currentBoard, pieceMoved, destinationSquare);
+
+  // Check if the move would leave player's king in check
+  let kingSquare = getPieceSquare(newBoard, playerColor + "KK");
+  if (isSquareInCheck([...boardHistory, newBoard], kingSquare, playerColor)) {
+    return 0;
+  }
+
+  return newBoard;
+}
+
+// Returns an array of all the squares a piece can validly move to given the current board.
+export function getAllPieceMoves(boardHistory, piece) {
+  let currentBoard = boardHistory[boardHistory.length - 1];
+  let validMoves = [];
+
+  for (let i = 0; i < currentBoard.length; i++) {
+    for (let j = 0; j < currentBoard[i].length; j++) {
+      let square = getSquareFromCoordinates([i, j]);
+      let validMove = movePiece(boardHistory, piece, square);
+
+      if (validMove) {
+        validMoves.push(square);
+      }
+    }
+  }
+
+  return validMoves;
+}
+
+// Returns an array of all the valid moves a player can make given the current board.
+export function getAllPlayerMoves(boardHistory, playerColor) {
+  let currentBoard = boardHistory[boardHistory.length - 1];
+  let validMoves = [];
+
+  for (let i = 0; i < currentBoard.length; i++) {
+    for (let j = 0; j < currentBoard[i].length; j++) {
+      let squareContent = currentBoard[i][j];
+      let pieceMoves = [];
+
+      if (squareContent[0] === playerColor[0]) {
+        pieceMoves = getAllPieceMoves(boardHistory, squareContent);
+      }
+
+      pieceMoves.forEach((move) => validMoves.push([squareContent, move]));
+    }
+  }
+
+  return validMoves;
+}
+
+// Returns 1 if the king is in checkmate, 0 otherwise.
+export function isKingInCheckmate(boardHistory, kingColor) {
+  let playerMoves = getAllPlayerMoves(boardHistory, kingColor);
+  if (playerMoves.length >= 1) return 0;
+  else return 1;
+}
+
 export function getChessNotation(boardHistory, pieceMoved, destinationSquare) {
   let currentBoard = boardHistory[boardHistory.length - 1];
   let previousBoard = boardHistory[boardHistory.length - 2];
@@ -599,96 +691,4 @@ export function getChessNotation(boardHistory, pieceMoved, destinationSquare) {
   }
 
   return notation;
-}
-
-// Returns 0 if invalid move, otherwise returns a new board with move performed.
-export function movePiece(boardHistory, pieceMoved, destinationSquare) {
-  let currentBoard = boardHistory[boardHistory.length - 1];
-  let playerColor = pieceMoved[0];
-
-  let pieceCoords = getPieceCoordinates(currentBoard, pieceMoved);
-  let destSquareCoords = getCoordinatesFromSquare(destinationSquare);
-
-  let destSquareContent = getSquareContent(currentBoard, destinationSquare);
-
-  // Verify piece is not moving to the square it's already on
-  if (pieceCoords === destSquareCoords) return 0;
-
-  // Verify piece is not attempting to capture a piece of its own color
-  if (playerColor === destSquareContent[0]) return 0;
-
-  // Verify piece is moving properly
-  let movementType = verifyValidMovement(
-    boardHistory,
-    pieceMoved,
-    destinationSquare
-  );
-  if (!movementType || movementType === 4) return 0;
-
-  // Get a new board with the attempted move
-  let newBoard = [];
-  if (movementType === 3) {
-    newBoard = getNewBoardEnPassant(
-      currentBoard,
-      pieceMoved,
-      destinationSquare
-    );
-  } else if (movementType === 5) {
-    newBoard = getNewBoardCastle(currentBoard, pieceMoved, destinationSquare);
-  } else newBoard = getNewBoard(currentBoard, pieceMoved, destinationSquare);
-
-  // Check if the move would leave player's king in check
-  let kingSquare = getPieceSquare(newBoard, playerColor + "KK");
-  if (isSquareInCheck([...boardHistory, newBoard], kingSquare, playerColor)) {
-    return 0;
-  }
-
-  return newBoard;
-}
-
-// Returns an array of all the squares a piece can validly move to given the current board.
-export function getAllPieceMoves(boardHistory, piece) {
-  let currentBoard = boardHistory[boardHistory.length - 1];
-  let validMoves = [];
-
-  for (let i = 0; i < currentBoard.length; i++) {
-    for (let j = 0; j < currentBoard[i].length; j++) {
-      let square = getSquareFromCoordinates([i, j]);
-      let validMove = movePiece(boardHistory, piece, square);
-
-      if (validMove) {
-        validMoves.push(square);
-      }
-    }
-  }
-
-  return validMoves;
-}
-
-// Returns an array of all the valid moves a player can make given the current board.
-export function getAllPlayerMoves(boardHistory, playerColor) {
-  let currentBoard = boardHistory[boardHistory.length - 1];
-  let validMoves = [];
-
-  for (let i = 0; i < currentBoard.length; i++) {
-    for (let j = 0; j < currentBoard[i].length; j++) {
-      let squareContent = currentBoard[i][j];
-      let pieceMoves = [];
-
-      if (squareContent[0] === playerColor[0]) {
-        pieceMoves = getAllPieceMoves(boardHistory, squareContent);
-      }
-
-      pieceMoves.forEach((move) => validMoves.push([squareContent, move]));
-    }
-  }
-
-  return validMoves;
-}
-
-// Returns 1 if the king is in checkmate, 0 otherwise.
-export function isKingInCheckmate(boardHistory, kingColor) {
-  let playerMoves = getAllPlayerMoves(boardHistory, kingColor);
-  if (playerMoves.length >= 1) return 0;
-  else return 1;
 }
